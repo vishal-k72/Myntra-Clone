@@ -1,0 +1,2468 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>English Speaking Practice</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+    <main class="app">
+      <!-- =========================
+         TOP SECTION
+    ========================== -->
+
+      <section class="top">
+        <div class="title-row">
+          <h1>🗣️ English Speaking Practice</h1>
+          <div class="counter" id="counter">Sentence 1</div>
+        </div>
+
+        <div class="sentence-box">
+          <div class="label">पढ़िए और English में बोलिए 👇</div>
+
+          <div id="hindiSentence">मैं आज स्कूल जाता हूँ।</div>
+
+          <div id="englishAnswer">I go to school today.</div>
+        </div>
+
+        <div class="controls">
+          <button onclick="previousSentence()" class="secondary">
+            ← Previous
+          </button>
+
+          <button onclick="nextSentence()">Next Sentence →</button>
+
+          <button onclick="showAnswer()" class="green">👁 Show Answer</button>
+
+          <button onclick="speakAnswer()" class="secondary">🔊 Listen</button>
+
+          <button onclick="toggleParagraph()" class="secondary">
+            📖 Paragraph
+          </button>
+
+          <button onclick="clearSelected()" class="red">Clear</button>
+
+          <input
+            id="search"
+            type="search"
+            placeholder="🔎 Word search..."
+            oninput="searchWords()"
+          />
+        </div>
+      </section>
+
+      <!-- =========================
+         WORD SECTION
+    ========================== -->
+
+      <section class="words-section">
+        <div class="words-header">
+          <strong> 📚 Daily Use English Words </strong>
+
+          <span id="wordCount"> 0 words </span>
+        </div>
+
+        <div id="wordGrid"></div>
+      </section>
+    </main>
+
+    <script>
+      /*
+      ==================================================
+      JSON DATA
+      ==================================================
+      */
+
+      const data = {
+        daily_use_english_words: [
+          { english: "I", hindi: "मैं" },
+          { english: "You", hindi: "तुम / आप" },
+          { english: "He", hindi: "वह (लड़का)" },
+          { english: "She", hindi: "वह (लड़की)" },
+          { english: "We", hindi: "हम" },
+          { english: "They", hindi: "वे / वे लोग" },
+          { english: "This", hindi: "यह" },
+          { english: "That", hindi: "वह" },
+          { english: "Here", hindi: "यहाँ" },
+          { english: "There", hindi: "वहाँ" },
+
+          { english: "What", hindi: "क्या" },
+          { english: "Why", hindi: "क्यों" },
+          { english: "When", hindi: "कब" },
+          { english: "Where", hindi: "कहाँ" },
+          { english: "Who", hindi: "कौन" },
+          { english: "Which", hindi: "कौन सा / कौन सी" },
+          { english: "How", hindi: "कैसे" },
+          { english: "How much", hindi: "कितना" },
+          { english: "How many", hindi: "कितने" },
+          { english: "How far", hindi: "कितनी दूर" },
+
+          { english: "Come", hindi: "आना" },
+          { english: "Go", hindi: "जाना" },
+          { english: "Eat", hindi: "खाना" },
+          { english: "Drink", hindi: "पीना" },
+          { english: "Sleep", hindi: "सोना" },
+          { english: "Wake up", hindi: "जागना" },
+          { english: "Sit", hindi: "बैठना" },
+          { english: "Stand", hindi: "खड़ा होना" },
+          { english: "Walk", hindi: "चलना" },
+          { english: "Run", hindi: "दौड़ना" },
+          { english: "Speak", hindi: "बोलना" },
+          { english: "Listen", hindi: "सुनना" },
+          { english: "Hear", hindi: "सुनना" },
+          { english: "See", hindi: "देखना" },
+          { english: "Look", hindi: "देखना" },
+          { english: "Read", hindi: "पढ़ना" },
+          { english: "Write", hindi: "लिखना" },
+          { english: "Learn", hindi: "सीखना" },
+          { english: "Teach", hindi: "सिखाना" },
+          { english: "Give", hindi: "देना" },
+          { english: "Take", hindi: "लेना" },
+          { english: "Bring", hindi: "लाना" },
+          { english: "Buy", hindi: "खरीदना" },
+          { english: "Sell", hindi: "बेचना" },
+          { english: "Open", hindi: "खोलना" },
+          { english: "Close", hindi: "बंद करना" },
+          { english: "Start", hindi: "शुरू करना" },
+          { english: "Stop", hindi: "रोकना / बंद करना" },
+          { english: "Wait", hindi: "इंतज़ार करना" },
+          { english: "Help", hindi: "मदद करना" },
+          { english: "Call", hindi: "फोन करना / बुलाना" },
+          { english: "Ask", hindi: "पूछना" },
+          { english: "Answer", hindi: "जवाब देना" },
+          { english: "Wash", hindi: "धोना" },
+          { english: "Brush", hindi: "साफ करना / ब्रश करना" },
+          { english: "Have", hindi: "रखना / लेना / करना" },
+          { english: "Cooking", hindi: "खाना बनाना" },
+          { english: "Watch", hindi: "देखना" },
+          { english: "Study", hindi: "पढ़ाई करना" },
+          { english: "Clean", hindi: "साफ करना" },
+          { english: "Cleaning", hindi: "साफ करना" },
+          { english: "Finish", hindi: "पूरा करना" },
+          { english: "Rest", hindi: "आराम करना" },
+          { english: "Need", hindi: "ज़रूरत होना / चाहिए" },
+          { english: "Want", hindi: "चाहना / चाहिए" },
+          { english: "Like", hindi: "पसंद करना" },
+          { english: "Charge", hindi: "चार्ज करना" },
+          { english: "Find", hindi: "ढूँढना / पाना" },
+          { english: "Put", hindi: "रखना" },
+          { english: "Touch", hindi: "छूना" },
+          { english: "Follow", hindi: "पीछे आना / अनुसरण करना" },
+          { english: "Trust", hindi: "भरोसा करना" },
+          { english: "Tell", hindi: "बताना" },
+          { english: "Say", hindi: "कहना" },
+          { english: "Think", hindi: "सोचना" },
+          { english: "Understand", hindi: "समझना" },
+          { english: "Meet", hindi: "मिलना" },
+          { english: "Talk", hindi: "बात करना" },
+          { english: "Reduce", hindi: "कम करना" },
+          { english: "Get off", hindi: "उतरना" },
+          { english: "Leave", hindi: "जाना / छोड़ना" },
+          { english: "Hurry", hindi: "जल्दी करना" },
+          { english: "Be", hindi: "होना / रहना" },
+          { english: "Forgive", hindi: "माफ़ करना" },
+          { english: "Worry", hindi: "चिंता करना" },
+          { english: "Say", hindi: "कहना" },
+
+          { english: "Good", hindi: "अच्छा" },
+          { english: "Bad", hindi: "बुरा" },
+          { english: "Big", hindi: "बड़ा" },
+          { english: "Small", hindi: "छोटा" },
+          { english: "Hot", hindi: "गरम" },
+          { english: "Cold", hindi: "ठंडा" },
+          { english: "Easy", hindi: "आसान" },
+          { english: "Difficult", hindi: "मुश्किल" },
+          { english: "Fast", hindi: "तेज़" },
+          { english: "Slow", hindi: "धीमा" },
+          { english: "Slowly", hindi: "धीरे" },
+          { english: "New", hindi: "नया" },
+          { english: "Old", hindi: "पुराना" },
+          { english: "Right", hindi: "सही / दायाँ" },
+          { english: "Wrong", hindi: "गलत" },
+          { english: "Beautiful", hindi: "सुंदर" },
+          { english: "Important", hindi: "महत्वपूर्ण" },
+          { english: "Ready", hindi: "तैयार" },
+          { english: "Busy", hindi: "व्यस्त" },
+          { english: "Free", hindi: "खाली / मुक्त" },
+          { english: "Tired", hindi: "थका हुआ" },
+          { english: "Happy", hindi: "खुश" },
+          { english: "Sad", hindi: "दुखी" },
+          { english: "Tasty", hindi: "स्वादिष्ट" },
+          { english: "Hungry", hindi: "भूखा" },
+          { english: "Thirsty", hindi: "प्यासा" },
+          { english: "Open", hindi: "खुला" },
+          { english: "Cheap", hindi: "सस्ता" },
+          { english: "Expensive", hindi: "महंगा" },
+          { english: "Louder", hindi: "ज़्यादा तेज़" },
+          { english: "Nice", hindi: "अच्छा / सुंदर" },
+          { english: "Proud", hindi: "गर्वित" },
+          { english: "Careful", hindi: "सावधान" },
+          { english: "Free", hindi: "खाली" },
+
+          { english: "Yes", hindi: "हाँ" },
+          { english: "No", hindi: "नहीं" },
+          { english: "Okay", hindi: "ठीक है" },
+          { english: "Please", hindi: "कृपया" },
+          { english: "Sorry", hindi: "माफ़ कीजिए" },
+          { english: "Thanks", hindi: "धन्यवाद / शुक्रिया" },
+          { english: "Welcome", hindi: "स्वागत है" },
+          { english: "Sure", hindi: "ज़रूर" },
+          { english: "Maybe", hindi: "शायद" },
+          { english: "Really", hindi: "सच में" },
+          { english: "Again", hindi: "फिर से" },
+          { english: "Now", hindi: "अभी" },
+          { english: "Today", hindi: "आज" },
+          { english: "Tomorrow", hindi: "कल (आने वाला)" },
+          { english: "Yesterday", hindi: "कल (बीता हुआ)" },
+          { english: "Always", hindi: "हमेशा" },
+          { english: "Never", hindi: "कभी नहीं" },
+          { english: "Sometimes", hindi: "कभी-कभी" },
+          { english: "Already", hindi: "पहले से" },
+          { english: "Later", hindi: "बाद में" },
+          { english: "Soon", hindi: "जल्द" },
+          { english: "Early", hindi: "जल्दी" },
+          { english: "Every day", hindi: "हर दिन / रोज़" },
+          { english: "Yet", hindi: "अभी तक" },
+          { english: "Absolutely", hindi: "बिल्कुल" },
+          { english: "A little", hindi: "थोड़ा" },
+          { english: "Another", hindi: "दूसरा / एक और" },
+          { english: "Everything", hindi: "सब कुछ" },
+          { english: "Anything", hindi: "कुछ भी" },
+          { english: "Nothing", hindi: "कुछ नहीं" },
+          { english: "Truth", hindi: "सच" },
+          { english: "Problem", hindi: "समस्या" },
+          { english: "Chance", hindi: "मौका" },
+
+          { english: "Morning", hindi: "सुबह" },
+          { english: "Evening", hindi: "शाम" },
+          { english: "Night", hindi: "रात" },
+          { english: "Time", hindi: "समय / बजे" },
+          { english: "Minute", hindi: "मिनट" },
+          { english: "Minutes", hindi: "मिनट" },
+          { english: "While", hindi: "थोड़ी देर" },
+
+          { english: "Home", hindi: "घर" },
+          { english: "House", hindi: "मकान / घर" },
+          { english: "Room", hindi: "कमरा" },
+          { english: "Door", hindi: "दरवाज़ा" },
+          { english: "Window", hindi: "खिड़की" },
+          { english: "Table", hindi: "मेज़" },
+          { english: "Chair", hindi: "कुर्सी" },
+          { english: "Fan", hindi: "पंखा" },
+          { english: "Light", hindi: "लाइट / रोशनी" },
+          { english: "Phone", hindi: "फोन" },
+          { english: "Bag", hindi: "बैग" },
+          { english: "Key", hindi: "चाबी" },
+
+          { english: "Food", hindi: "खाना" },
+          { english: "Water", hindi: "पानी" },
+          { english: "Tea", hindi: "चाय" },
+          { english: "Coffee", hindi: "कॉफी" },
+          { english: "Breakfast", hindi: "नाश्ता" },
+          { english: "Glass", hindi: "गिलास" },
+          { english: "Kilo", hindi: "किलो" },
+
+          { english: "Mother", hindi: "माँ" },
+          { english: "Father", hindi: "पिता / पिताजी" },
+          { english: "Brother", hindi: "भाई" },
+          { english: "Sister", hindi: "बहन" },
+          { english: "Name", hindi: "नाम" },
+          { english: "People", hindi: "लोग" },
+
+          { english: "Market", hindi: "बाज़ार" },
+          { english: "Station", hindi: "स्टेशन" },
+          { english: "Bus", hindi: "बस" },
+          { english: "Way", hindi: "रास्ता" },
+          { english: "Price", hindi: "कीमत" },
+
+          { english: "Weather", hindi: "मौसम" },
+          { english: "English", hindi: "अंग्रेज़ी" },
+          { english: "Delhi", hindi: "दिल्ली" },
+
+          { english: "One", hindi: "एक" },
+          { english: "Some", hindi: "कुछ / थोड़ा" },
+          { english: "Much", hindi: "बहुत / अधिक" },
+          { english: "Less", hindi: "कम" },
+          { english: "Five", hindi: "पाँच" },
+
+          { english: "At", hindi: "पर / में" },
+          { english: "In", hindi: "में" },
+          { english: "On", hindi: "पर" },
+          { english: "To", hindi: "को / की ओर" },
+          { english: "From", hindi: "से" },
+          { english: "With", hindi: "साथ" },
+          { english: "For", hindi: "लिए" },
+          { english: "Of", hindi: "का / के / की" },
+          { english: "About", hindi: "के बारे में" },
+          { english: "Back", hindi: "वापस" },
+
+          { english: "Am", hindi: "हूँ" },
+          { english: "Is", hindi: "है" },
+          { english: "Are", hindi: "हैं / हो" },
+          { english: "Was", hindi: "था / थी" },
+          { english: "Were", hindi: "थे / थीं" },
+          { english: "Will", hindi: "भविष्य के लिए" },
+          { english: "Can", hindi: "सकना / सकते हैं" },
+          { english: "Cannot", hindi: "नहीं सकता / नहीं सकते" },
+          { english: "Do", hindi: "करना" },
+          { english: "Does", hindi: "करता है / क्या" },
+          { english: "Did", hindi: "किया / किया था" },
+          { english: "Have", hindi: "है / रखना / लेना" },
+          { english: "Has", hindi: "है / रखा है" },
+          { english: "Had", hindi: "था / था पास" },
+          { english: "Done", hindi: "किया हुआ" },
+          { english: "Eaten", hindi: "खा लिया / खाया हुआ" },
+          { english: "Gone", hindi: "गया हुआ" },
+
+          { english: "My", hindi: "मेरा / मेरी / मेरे" },
+          { english: "Your", hindi: "तुम्हारा / आपका" },
+          { english: "His", hindi: "उसका (लड़का)" },
+          { english: "Her", hindi: "उसका (लड़की)" },
+          { english: "Our", hindi: "हमारा / हमारी" },
+          { english: "Their", hindi: "उनका / उनकी" },
+          { english: "Me", hindi: "मुझे / मुझसे" },
+          { english: "You", hindi: "तुम्हें / आपको" },
+          { english: "It", hindi: "यह / इसे" },
+
+          { english: "And", hindi: "और" },
+          { english: "But", hindi: "लेकिन" },
+          { english: "Then", hindi: "फिर / तब" },
+          { english: "Because", hindi: "क्योंकि" },
+          { english: "If", hindi: "अगर / यदि" },
+          { english: "Or", hindi: "या" },
+
+          { english: "Give up", hindi: "हार मानना" },
+          { english: "Wake up", hindi: "जागना" },
+          { english: "Take a bath", hindi: "नहाना" },
+          { english: "Have breakfast", hindi: "नाश्ता करना" },
+          { english: "At home", hindi: "घर पर" },
+          { english: "At work", hindi: "काम पर" },
+          { english: "Come back", hindi: "वापस आना" },
+          { english: "Get off", hindi: "उतरना" },
+          { english: "Get ready", hindi: "तैयार होना" },
+          { english: "Turn on", hindi: "चालू करना" },
+          { english: "Turn off", hindi: "बंद करना" },
+          { english: "Have to", hindi: "करना है / करना पड़ता है" },
+          { english: "Need to", hindi: "करने की ज़रूरत है" },
+          { english: "A while", hindi: "थोड़ी देर" },
+          { english: "A little", hindi: "थोड़ा" },
+          { english: "A lot", hindi: "बहुत अधिक" },
+          { english: "No problem", hindi: "कोई समस्या नहीं" },
+          { english: "Be careful", hindi: "सावधान रहो" },
+          { english: "Hurry up", hindi: "जल्दी करो" },
+          { english: "Trust me", hindi: "मुझ पर भरोसा करो" },
+          { english: "Follow me", hindi: "मेरे पीछे आओ" },
+          { english: "Wait for me", hindi: "मेरा इंतज़ार करो" },
+        ],
+      };
+
+      /*
+      ==================================================
+      PRACTICE SENTENCES
+      ==================================================
+  
+      इन sentences में उन्हीं vocabulary words
+      का इस्तेमाल किया गया है।
+      */
+
+      const sentences = [
+        {
+          hindi: "मैं आज स्कूल जाता हूँ।",
+          english:
+            "I go to school today. — go = जाना, school = स्कूल, today = आज",
+        },
+        {
+          hindi: "तुम अभी कहाँ जा रहे हो?",
+          english:
+            "Where are you going now? — where = कहाँ, going = जा रहे, now = अभी",
+        },
+        {
+          hindi: "वह लड़का बहुत खुश है।",
+          english: "He is very happy. — he = वह, very = बहुत, happy = खुश",
+        },
+        {
+          hindi: "वह लड़की एक किताब पढ़ती है।",
+          english:
+            "She reads a book. — she = वह, reads = पढ़ती है, book = किताब",
+        },
+        {
+          hindi: "हम यहाँ इंतज़ार कर रहे हैं।",
+          english:
+            "We are waiting here. — we = हम, waiting = इंतज़ार कर रहे, here = यहाँ",
+        },
+        {
+          hindi: "वे लोग वहाँ खड़े हैं।",
+          english:
+            "They are standing there. — they = वे, standing = खड़े हैं, there = वहाँ",
+        },
+        {
+          hindi: "यह बहुत आसान है।",
+          english: "This is very easy. — this = यह, very = बहुत, easy = आसान",
+        },
+        {
+          hindi: "वह बहुत सुंदर है।",
+          english:
+            "That is very beautiful. — that = वह, very = बहुत, beautiful = सुंदर",
+        },
+        {
+          hindi: "तुम क्या खाना चाहते हो?",
+          english:
+            "What do you want to eat? — what = क्या, want = चाहते, eat = खाना",
+        },
+        {
+          hindi: "तुम यहाँ क्यों आए?",
+          english:
+            "Why did you come here? — why = क्यों, come = आना, here = यहाँ",
+        },
+        {
+          hindi: "तुम कब आओगे?",
+          english:
+            "When will you come? — when = कब, will = भविष्य के लिए, come = आना",
+        },
+        {
+          hindi: "कौन मेरी मदद करेगा?",
+          english: "Who will help me? — who = कौन, help = मदद करना, me = मुझे",
+        },
+        {
+          hindi: "तुम कैसे सीखते हो?",
+          english: "How do you learn? — how = कैसे, learn = सीखना, do = करना",
+        },
+        {
+          hindi: "कृपया यहाँ बैठो।",
+          english:
+            "Please sit here. — please = कृपया, sit = बैठना, here = यहाँ",
+        },
+        {
+          hindi: "दरवाज़ा खोलो और फिर बंद करो।",
+          english:
+            "Open the door and then close it. — open = खोलना, door = दरवाज़ा, close = बंद करना",
+        },
+        {
+          hindi: "कृपया मेरी बात सुनो।",
+          english:
+            "Please listen to me. — listen = सुनना, me = मुझे, please = कृपया",
+        },
+        {
+          hindi: "मुझे पानी दो।",
+          english: "Give me water. — give = देना, me = मुझे, water = पानी",
+        },
+        {
+          hindi: "यह किताब ले लो।",
+          english: "Take this book. — take = लेना, this = यह, book = किताब",
+        },
+        {
+          hindi: "मैं English सीखना चाहता हूँ।",
+          english:
+            "I want to learn English. — want = चाहना, learn = सीखना, English = अंग्रेज़ी",
+        },
+        {
+          hindi: "क्या तुम मेरी मदद कर सकते हो?",
+          english:
+            "Can you help me? — can = सकता/सकते, help = मदद करना, me = मुझे",
+        },
+        {
+          hindi: "अभी शुरू करो और बाद में मत रुको।",
+          english:
+            "Start now and do not stop later. — start = शुरू करना, now = अभी, stop = रुकना",
+        },
+        {
+          hindi: "मैं बहुत थका हुआ हूँ।",
+          english: "I am very tired. — very = बहुत, tired = थका हुआ, am = हूँ",
+        },
+        {
+          hindi: "क्या तुम तैयार हो?",
+          english: "Are you ready? — ready = तैयार, are = हो, you = तुम",
+        },
+        {
+          hindi: "मैं आज व्यस्त हूँ।",
+          english: "I am busy today. — busy = व्यस्त, today = आज, am = हूँ",
+        },
+        {
+          hindi: "शायद मैं कल आऊँगा।",
+          english:
+            "Maybe I will come tomorrow. — maybe = शायद, tomorrow = कल, come = आना",
+        },
+        {
+          hindi: "मैं हमेशा English सीखता हूँ।",
+          english:
+            "I always learn English. — always = हमेशा, learn = सीखना, English = अंग्रेज़ी",
+        },
+        {
+          hindi: "मैं कभी हार नहीं मानता।",
+          english: "I never give up. — never = कभी नहीं, give up = हार मानना",
+        },
+        {
+          hindi: "कभी-कभी मैं धीरे बोलता हूँ।",
+          english:
+            "Sometimes I speak slowly. — sometimes = कभी-कभी, speak = बोलना, slowly = धीरे",
+        },
+        {
+          hindi: "क्या तुमने यह पहले से किया है?",
+          english:
+            "Have you already done this? — already = पहले ही, done = किया, this = यह",
+        },
+        {
+          hindi: "फिर से बोलो, कृपया।",
+          english:
+            "Please speak again. — speak = बोलना, again = फिर से, please = कृपया",
+        },
+
+        // Daily Basic English
+        {
+          hindi: "मैं सुबह जल्दी उठता हूँ।",
+          english:
+            "I wake up early in the morning. — wake up = जागना, early = जल्दी, morning = सुबह",
+        },
+        {
+          hindi: "मैं अपना चेहरा धोता हूँ।",
+          english: "I wash my face. — wash = धोना, face = चेहरा, my = मेरा",
+        },
+        {
+          hindi: "मैं अपने दाँत साफ करता हूँ।",
+          english:
+            "I brush my teeth. — brush = साफ करना, teeth = दाँत, my = मेरे",
+        },
+        {
+          hindi: "मैं रोज़ नहाता हूँ।",
+          english:
+            "I take a bath every day. — take a bath = नहाना, every day = रोज़",
+        },
+        {
+          hindi: "मैं नाश्ता करता हूँ।",
+          english: "I have breakfast. — have = करना/लेना, breakfast = नाश्ता",
+        },
+        {
+          hindi: "मुझे चाय पसंद है।",
+          english: "I like tea. — like = पसंद करना, tea = चाय",
+        },
+        {
+          hindi: "मुझे कॉफी पसंद नहीं है।",
+          english:
+            "I do not like coffee. — do not = नहीं, like = पसंद करना, coffee = कॉफी",
+        },
+        {
+          hindi: "मैं अभी घर पर हूँ।",
+          english: "I am at home now. — at home = घर पर, now = अभी, am = हूँ",
+        },
+        {
+          hindi: "मेरी माँ खाना बना रही हैं।",
+          english:
+            "My mother is cooking food. — mother = माँ, cooking = खाना बना रही, food = खाना",
+        },
+        {
+          hindi: "पिताजी काम पर गए हैं।",
+          english:
+            "My father has gone to work. — father = पिता, gone = गए हैं, work = काम",
+        },
+        {
+          hindi: "मेरा भाई टीवी देख रहा है।",
+          english:
+            "My brother is watching TV. — brother = भाई, watching = देख रहा, TV = टेलीविजन",
+        },
+        {
+          hindi: "मेरी बहन पढ़ रही है।",
+          english:
+            "My sister is studying. — sister = बहन, studying = पढ़ रही है",
+        },
+        {
+          hindi: "मैं अपना कमरा साफ कर रहा हूँ।",
+          english:
+            "I am cleaning my room. — cleaning = साफ करना, room = कमरा, my = मेरा",
+        },
+        {
+          hindi: "मुझे अपना काम पूरा करना है।",
+          english:
+            "I have to finish my work. — have to = करना है, finish = पूरा करना, work = काम",
+        },
+        {
+          hindi: "मुझे थोड़ी देर आराम करना है।",
+          english:
+            "I need to rest for a while. — need = ज़रूरत होना, rest = आराम करना, while = थोड़ी देर",
+        },
+        {
+          hindi: "मैं अभी खाना खा रहा हूँ।",
+          english:
+            "I am eating food now. — eating = खा रहा, food = खाना, now = अभी",
+        },
+        {
+          hindi: "खाना बहुत स्वादिष्ट है।",
+          english:
+            "The food is very tasty. — food = खाना, very = बहुत, tasty = स्वादिष्ट",
+        },
+        {
+          hindi: "मुझे भूख लगी है।",
+          english: "I am hungry. — hungry = भूखा, am = हूँ",
+        },
+        {
+          hindi: "मुझे प्यास लगी है।",
+          english: "I am thirsty. — thirsty = प्यासा, am = हूँ",
+        },
+        {
+          hindi: "मुझे एक गिलास पानी चाहिए।",
+          english:
+            "I need a glass of water. — need = चाहिए, glass = गिलास, water = पानी",
+        },
+        {
+          hindi: "कृपया मुझे थोड़ा पानी दो।",
+          english:
+            "Please give me some water. — please = कृपया, give = देना, some = थोड़ा, water = पानी",
+        },
+        {
+          hindi: "यह खाना बहुत गर्म है।",
+          english:
+            "This food is very hot. — food = खाना, hot = गर्म, very = बहुत",
+        },
+        {
+          hindi: "खाना अभी तैयार नहीं है।",
+          english:
+            "The food is not ready yet. — ready = तैयार, not = नहीं, yet = अभी तक",
+        },
+        {
+          hindi: "मुझे यह खाना अच्छा लगता है।",
+          english:
+            "I like this food. — like = पसंद करना, this = यह, food = खाना",
+        },
+        {
+          hindi: "क्या तुमने खाना खा लिया?",
+          english:
+            "Have you eaten your food? — eaten = खा लिया, your = तुम्हारा, food = खाना",
+        },
+
+        // Home
+        {
+          hindi: "घर में कौन है?",
+          english: "Who is at home? — who = कौन, home = घर, at = पर",
+        },
+        {
+          hindi: "दरवाज़ा खुला है।",
+          english: "The door is open. — door = दरवाज़ा, open = खुला",
+        },
+        {
+          hindi: "दरवाज़ा बंद कर दो।",
+          english: "Close the door. — close = बंद करना, door = दरवाज़ा",
+        },
+        {
+          hindi: "लाइट बंद कर दो।",
+          english: "Turn off the light. — turn off = बंद करना, light = लाइट",
+        },
+        {
+          hindi: "लाइट चालू कर दो।",
+          english: "Turn on the light. — turn on = चालू करना, light = लाइट",
+        },
+        {
+          hindi: "पंखा चालू है।",
+          english: "The fan is on. — fan = पंखा, on = चालू",
+        },
+        {
+          hindi: "खिड़की खोल दो।",
+          english: "Open the window. — open = खोलना, window = खिड़की",
+        },
+        {
+          hindi: "कृपया यहाँ मत बैठो।",
+          english:
+            "Please do not sit here. — please = कृपया, do not = मत/नहीं, sit = बैठना",
+        },
+        {
+          hindi: "मेरा फोन कहाँ है?",
+          english: "Where is my phone? — where = कहाँ, phone = फोन, my = मेरा",
+        },
+        {
+          hindi: "मेरा बैग टेबल पर है।",
+          english: "My bag is on the table. — bag = बैग, table = मेज़, on = पर",
+        },
+        {
+          hindi: "मेरी चाबी नहीं मिल रही है।",
+          english:
+            "I cannot find my key. — cannot = नहीं सकता, find = ढूँढना, key = चाबी",
+        },
+        {
+          hindi: "मुझे अपना फोन चार्ज करना है।",
+          english:
+            "I need to charge my phone. — need = ज़रूरत, charge = चार्ज करना, phone = फोन",
+        },
+
+        // Conversation
+        {
+          hindi: "तुम कैसे हो?",
+          english: "How are you? — how = कैसे, are = हो, you = तुम",
+        },
+        {
+          hindi: "मैं ठीक हूँ।",
+          english: "I am fine. — fine = ठीक, am = हूँ",
+        },
+        {
+          hindi: "तुम्हारा नाम क्या है?",
+          english:
+            "What is your name? — what = क्या, name = नाम, your = तुम्हारा",
+        },
+        {
+          hindi: "मेरा नाम राहुल है।",
+          english: "My name is Rahul. — my = मेरा, name = नाम",
+        },
+        {
+          hindi: "तुम कहाँ रहते हो?",
+          english: "Where do you live? — where = कहाँ, live = रहना",
+        },
+        {
+          hindi: "मैं दिल्ली में रहता हूँ।",
+          english: "I live in Delhi. — live = रहना, in = में",
+        },
+        {
+          hindi: "तुम क्या कर रहे हो?",
+          english:
+            "What are you doing? — what = क्या, doing = कर रहे, are = हो",
+        },
+        {
+          hindi: "मैं पढ़ाई कर रहा हूँ।",
+          english: "I am studying. — studying = पढ़ाई करना, am = हूँ",
+        },
+        {
+          hindi: "तुम कहाँ जा रहे हो?",
+          english: "Where are you going? — where = कहाँ, going = जा रहे",
+        },
+        {
+          hindi: "मैं बाजार जा रहा हूँ।",
+          english: "I am going to the market. — going = जा रहा, market = बाजार",
+        },
+        {
+          hindi: "तुम कब वापस आओगे?",
+          english: "When will you come back? — when = कब, come back = वापस आना",
+        },
+        {
+          hindi: "मैं शाम को वापस आऊँगा।",
+          english:
+            "I will come back in the evening. — will = भविष्य, come back = वापस आना, evening = शाम",
+        },
+        {
+          hindi: "मुझसे फिर बात करना।",
+          english:
+            "Talk to me again. — talk = बात करना, me = मुझसे, again = फिर से",
+        },
+        {
+          hindi: "मुझे समझ नहीं आया।",
+          english:
+            "I did not understand. — understand = समझना, did not = नहीं किया",
+        },
+        {
+          hindi: "कृपया धीरे बोलो।",
+          english:
+            "Please speak slowly. — please = कृपया, speak = बोलना, slowly = धीरे",
+        },
+        {
+          hindi: "थोड़ा तेज बोलो।",
+          english:
+            "Speak a little louder. — speak = बोलना, little = थोड़ा, louder = तेज",
+        },
+        {
+          hindi: "एक बार फिर बोलो।",
+          english: "Say it again. — say = कहना, again = फिर से, it = इसे",
+        },
+        {
+          hindi: "मुझे पता नहीं है।",
+          english: "I do not know. — know = जानना, do not = नहीं",
+        },
+        {
+          hindi: "मुझे लगता है कि तुम सही हो।",
+          english: "I think you are right. — think = सोचना, right = सही",
+        },
+        {
+          hindi: "तुम बिल्कुल सही हो।",
+          english:
+            "You are absolutely right. — absolutely = बिल्कुल, right = सही",
+        },
+
+        // Shopping
+        {
+          hindi: "यह कितने का है?",
+          english: "How much is this? — how much = कितना, this = यह",
+        },
+        {
+          hindi: "मुझे यह चाहिए।",
+          english: "I want this. — want = चाहिए/चाहना, this = यह",
+        },
+        {
+          hindi: "मुझे यह नहीं चाहिए।",
+          english:
+            "I do not want this. — do not = नहीं, want = चाहिए, this = यह",
+        },
+        {
+          hindi: "क्या आपके पास दूसरा है?",
+          english:
+            "Do you have another one? — another = दूसरा, have = पास होना, one = एक",
+        },
+        {
+          hindi: "क्या यह सस्ता है?",
+          english: "Is this cheap? — cheap = सस्ता, this = यह",
+        },
+        {
+          hindi: "यह बहुत महंगा है।",
+          english: "This is very expensive. — expensive = महंगा, very = बहुत",
+        },
+        {
+          hindi: "मुझे थोड़ा कम चाहिए।",
+          english:
+            "I want a little less. — little = थोड़ा, less = कम, want = चाहिए",
+        },
+        {
+          hindi: "क्या आप इसे कम कर सकते हैं?",
+          english:
+            "Can you reduce the price? — reduce = कम करना, price = कीमत, can = सकते",
+        },
+        {
+          hindi: "मुझे एक किलो चाहिए।",
+          english: "I need one kilo. — need = चाहिए, one = एक, kilo = किलो",
+        },
+
+        // Travel
+        {
+          hindi: "बस कहाँ मिलेगी?",
+          english:
+            "Where can I find the bus? — where = कहाँ, find = मिलना/ढूँढना, bus = बस",
+        },
+        {
+          hindi: "स्टेशन कितनी दूर है?",
+          english:
+            "How far is the station? — how far = कितनी दूर, station = स्टेशन",
+        },
+        {
+          hindi: "मुझे स्टेशन जाना है।",
+          english:
+            "I need to go to the station. — need = ज़रूरत, go = जाना, station = स्टेशन",
+        },
+        {
+          hindi: "क्या यह बस दिल्ली जाती है?",
+          english:
+            "Does this bus go to Delhi? — does = क्या, bus = बस, go = जाना",
+        },
+        {
+          hindi: "मुझे यहाँ उतरना है।",
+          english:
+            "I need to get off here. — get off = उतरना, here = यहाँ, need = ज़रूरत",
+        },
+        {
+          hindi: "कृपया मुझे रास्ता बताओ।",
+          english:
+            "Please tell me the way. — tell = बताना, way = रास्ता, please = कृपया",
+        },
+        {
+          hindi: "मुझे रास्ता नहीं पता।",
+          english:
+            "I do not know the way. — know = पता होना, way = रास्ता, do not = नहीं",
+        },
+
+        // Time & Daily Routine
+        {
+          hindi: "अभी कितने बजे हैं?",
+          english: "What time is it now? — what time = कितने बजे, now = अभी",
+        },
+        {
+          hindi: "अभी सुबह है।",
+          english: "It is morning now. — morning = सुबह, now = अभी",
+        },
+        {
+          hindi: "मैं कल तुमसे मिलूँगा।",
+          english:
+            "I will meet you tomorrow. — meet = मिलना, tomorrow = कल, will = भविष्य",
+        },
+        {
+          hindi: "मैं आज बहुत व्यस्त हूँ।",
+          english:
+            "I am very busy today. — busy = व्यस्त, today = आज, very = बहुत",
+        },
+        {
+          hindi: "मैं कल खाली रहूँगा।",
+          english:
+            "I will be free tomorrow. — free = खाली, tomorrow = कल, will = भविष्य",
+        },
+        {
+          hindi: "मुझे अभी जाना है।",
+          english:
+            "I have to go now. — have to = करना है, go = जाना, now = अभी",
+        },
+        {
+          hindi: "थोड़ी देर रुको।",
+          english: "Wait for a while. — wait = इंतज़ार करना, while = थोड़ी देर",
+        },
+        {
+          hindi: "मुझे पाँच मिनट दो।",
+          english: "Give me five minutes. — give = देना, minutes = मिनट",
+        },
+        {
+          hindi: "मैं जल्द वापस आऊँगा।",
+          english:
+            "I will be back soon. — soon = जल्द, back = वापस, will = भविष्य",
+        },
+        {
+          hindi: "आज मौसम अच्छा है।",
+          english:
+            "The weather is nice today. — weather = मौसम, nice = अच्छा, today = आज",
+        },
+
+        // Common Useful Sentences
+        {
+          hindi: "कोई बात नहीं।",
+          english: "No problem. — no = नहीं, problem = समस्या",
+        },
+        {
+          hindi: "बहुत अच्छा।",
+          english: "Very good. — very = बहुत, good = अच्छा",
+        },
+        {
+          hindi: "यह ठीक है।",
+          english: "It is okay. — okay = ठीक, it = यह",
+        },
+        {
+          hindi: "मुझे माफ़ करो।",
+          english: "Forgive me. — forgive = माफ़ करना, me = मुझे",
+        },
+        {
+          hindi: "कोई चिंता नहीं।",
+          english: "Do not worry. — worry = चिंता करना, do not = मत/नहीं",
+        },
+        {
+          hindi: "मेरा इंतज़ार करो।",
+          english: "Wait for me. — wait = इंतज़ार करना, me = मेरा/मेरे लिए",
+        },
+        {
+          hindi: "मेरे साथ आओ।",
+          english: "Come with me. — come = आना, with = साथ, me = मेरे",
+        },
+        {
+          hindi: "मेरे पीछे आओ।",
+          english: "Follow me. — follow = पीछे आना, me = मुझे",
+        },
+        {
+          hindi: "इसे मत छुओ।",
+          english: "Do not touch it. — touch = छूना, do not = मत, it = इसे",
+        },
+        {
+          hindi: "इसे यहाँ रखो।",
+          english: "Put it here. — put = रखना, here = यहाँ, it = इसे",
+        },
+        {
+          hindi: "इसे वहाँ रखो।",
+          english: "Put it there. — put = रखना, there = वहाँ, it = इसे",
+        },
+        {
+          hindi: "मुझे एक मौका दो।",
+          english: "Give me a chance. — give = देना, chance = मौका, me = मुझे",
+        },
+        {
+          hindi: "मुझ पर भरोसा करो।",
+          english: "Trust me. — trust = भरोसा करना, me = मुझ पर",
+        },
+        {
+          hindi: "मुझे सच बताओ।",
+          english: "Tell me the truth. — tell = बताना, truth = सच, me = मुझे",
+        },
+        {
+          hindi: "झूठ मत बोलो।",
+          english:
+            "Do not tell a lie. — do not = मत, tell = बोलना/कहना, lie = झूठ",
+        },
+        {
+          hindi: "जल्दी करो।",
+          english: "Hurry up. — hurry = जल्दी करना, up = यहाँ जोर देने के लिए",
+        },
+        {
+          hindi: "धीरे चलो।",
+          english: "Walk slowly. — walk = चलना, slowly = धीरे",
+        },
+        {
+          hindi: "सावधान रहो।",
+          english: "Be careful. — be = रहो, careful = सावधान",
+        },
+        {
+          hindi: "मुझे तुम्हारी मदद चाहिए।",
+          english:
+            "I need your help. — need = ज़रूरत, your = तुम्हारी, help = मदद",
+        },
+        {
+          hindi: "मैं तुम्हें बाद में फोन करूँगा।",
+          english:
+            "I will call you later. — call = फोन करना, later = बाद में, will = भविष्य",
+        },
+        {
+          hindi: "मुझे अभी जाना है।",
+          english:
+            "I have to leave now. — have to = करना है, leave = जाना/छोड़ना, now = अभी",
+        },
+        {
+          hindi: "क्या तुम मुझे सुन सकते हो?",
+          english: "Can you hear me? — hear = सुनना, can = सकते, me = मुझे",
+        },
+        {
+          hindi: "क्या तुम मुझे देख सकते हो?",
+          english: "Can you see me? — see = देखना, can = सकते, me = मुझे",
+        },
+        {
+          hindi: "मुझे यह पसंद है।",
+          english: "I like this. — like = पसंद करना, this = यह",
+        },
+        {
+          hindi: "मुझे यह पसंद नहीं है।",
+          english:
+            "I do not like this. — do not = नहीं, like = पसंद करना, this = यह",
+        },
+        {
+          hindi: "मैं तुम्हारे लिए खुश हूँ।",
+          english: "I am happy for you. — happy = खुश, for = लिए, you = तुम",
+        },
+        {
+          hindi: "मुझे तुम पर गर्व है।",
+          english: "I am proud of you. — proud = गर्व, of = पर, you = तुम",
+        },
+        {
+          hindi: "सब कुछ ठीक है।",
+          english: "Everything is fine. — everything = सब कुछ, fine = ठीक",
+        },
+        {
+          hindi: "मुझे कुछ नहीं चाहिए।",
+          english:
+            "I do not need anything. — need = ज़रूरत, anything = कुछ भी, do not = नहीं",
+        },
+        {
+          hindi: "मैं अभी सीख रहा हूँ।",
+          english: "I am learning now. — learning = सीख रहा, now = अभी",
+        },
+      ];
+
+      const paragraphs = [
+        // =========================
+        // DAILY USE PARAGRAPHS
+        // =========================
+
+        {
+          hindi:
+            "मैं आज सुबह जल्दी उठा। मैंने नाश्ता किया और फिर स्कूल जाने के लिए तैयार हुआ। स्कूल में मैंने अपने दोस्तों से बात की और अपनी पढ़ाई पर ध्यान दिया।",
+
+          english:
+            "I woke up early this morning. I had breakfast and then got ready to go to school. At school, I talked to my friends and focused on my studies.",
+
+          words: [
+            { english: "woke up", hindi: "उठा" },
+            { english: "early", hindi: "जल्दी" },
+            { english: "morning", hindi: "सुबह" },
+            { english: "breakfast", hindi: "नाश्ता" },
+            { english: "ready", hindi: "तैयार" },
+            { english: "school", hindi: "स्कूल" },
+            { english: "friends", hindi: "दोस्त" },
+            { english: "focused", hindi: "ध्यान दिया" },
+            { english: "studies", hindi: "पढ़ाई" },
+          ],
+        },
+
+        {
+          hindi:
+            "मैं रोज़ सुबह अपने कमरे की सफाई करता हूँ। इसके बाद मैं नहाता हूँ और नाश्ता करता हूँ। नाश्ता करने के बाद मैं अपना काम शुरू करता हूँ।",
+
+          english:
+            "I clean my room every morning. After that, I take a bath and have breakfast. After breakfast, I start my work.",
+
+          words: [
+            { english: "clean", hindi: "साफ करना" },
+            { english: "room", hindi: "कमरा" },
+            { english: "every morning", hindi: "हर सुबह" },
+            { english: "after that", hindi: "उसके बाद" },
+            { english: "take a bath", hindi: "नहाना" },
+            { english: "have breakfast", hindi: "नाश्ता करना" },
+            { english: "start", hindi: "शुरू करना" },
+            { english: "work", hindi: "काम" },
+          ],
+        },
+
+        {
+          hindi:
+            "आज मौसम बहुत अच्छा है। मैं अपने परिवार के साथ बाहर गया। हमने एक साथ खाना खाया और कुछ समय पार्क में बिताया।",
+
+          english:
+            "The weather is very nice today. I went outside with my family. We ate together and spent some time in the park.",
+
+          words: [
+            { english: "weather", hindi: "मौसम" },
+            { english: "nice", hindi: "अच्छा" },
+            { english: "outside", hindi: "बाहर" },
+            { english: "family", hindi: "परिवार" },
+            { english: "together", hindi: "एक साथ" },
+            { english: "ate", hindi: "खाया" },
+            { english: "spent", hindi: "बिताया" },
+            { english: "park", hindi: "पार्क" },
+          ],
+        },
+
+        {
+          hindi:
+            "मैं बाजार गया और कुछ जरूरी सामान खरीदा। दुकान पर बहुत लोग थे, इसलिए मुझे थोड़ी देर इंतजार करना पड़ा। सामान खरीदने के बाद मैं घर वापस आ गया।",
+
+          english:
+            "I went to the market and bought some necessary things. There were many people at the shop, so I had to wait for a while. After buying the things, I came back home.",
+
+          words: [
+            { english: "market", hindi: "बाज़ार" },
+            { english: "bought", hindi: "खरीदा" },
+            { english: "necessary", hindi: "ज़रूरी" },
+            { english: "things", hindi: "चीज़ें" },
+            { english: "shop", hindi: "दुकान" },
+            { english: "many", hindi: "बहुत से" },
+            { english: "wait", hindi: "इंतज़ार करना" },
+            { english: "for a while", hindi: "थोड़ी देर के लिए" },
+            { english: "came back", hindi: "वापस आया" },
+          ],
+        },
+
+        {
+          hindi:
+            "कल मैं अपने दोस्त से मिलने गया। हमने एक कप चाय पी और काफी देर तक बात की। उसने मुझे अपने नए काम के बारे में बताया।",
+
+          english:
+            "Yesterday, I went to meet my friend. We had a cup of tea and talked for a long time. He told me about his new job.",
+
+          words: [
+            { english: "yesterday", hindi: "कल (बीता हुआ)" },
+            { english: "meet", hindi: "मिलना" },
+            { english: "friend", hindi: "दोस्त" },
+            { english: "a cup of tea", hindi: "एक कप चाय" },
+            { english: "talked", hindi: "बात की" },
+            { english: "for a long time", hindi: "काफी देर तक" },
+            { english: "told", hindi: "बताया" },
+            { english: "job", hindi: "नौकरी / काम" },
+          ],
+        },
+
+        {
+          hindi:
+            "जब मैं घर आया, मेरी माँ खाना बना रही थीं। मैंने उनकी मदद की और फिर हम सभी ने साथ में खाना खाया। खाना बहुत स्वादिष्ट था।",
+
+          english:
+            "When I came home, my mother was cooking food. I helped her and then we all had dinner together. The food was very tasty.",
+
+          words: [
+            { english: "when", hindi: "जब" },
+            { english: "came home", hindi: "घर आया" },
+            { english: "mother", hindi: "माँ" },
+            { english: "cooking", hindi: "खाना बना रही" },
+            { english: "helped", hindi: "मदद की" },
+            { english: "all", hindi: "सभी" },
+            { english: "dinner", hindi: "रात का खाना" },
+            { english: "tasty", hindi: "स्वादिष्ट" },
+          ],
+        },
+
+        {
+          hindi:
+            "मेरा फोन सुबह से काम नहीं कर रहा था। मैंने उसे चार्ज किया, लेकिन फिर भी वह चालू नहीं हुआ। बाद में मैंने उसे सर्विस सेंटर पर दिखाया।",
+
+          english:
+            "My phone was not working since morning. I charged it, but it still did not turn on. Later, I took it to a service center.",
+
+          words: [
+            { english: "phone", hindi: "फोन" },
+            { english: "working", hindi: "काम करना" },
+            { english: "since morning", hindi: "सुबह से" },
+            { english: "charged", hindi: "चार्ज किया" },
+            { english: "still", hindi: "फिर भी" },
+            { english: "turn on", hindi: "चालू होना" },
+            { english: "later", hindi: "बाद में" },
+            { english: "service center", hindi: "सर्विस सेंटर" },
+          ],
+        },
+
+        {
+          hindi:
+            "आज मैं थोड़ा थका हुआ हूँ, लेकिन मुझे अपना काम पूरा करना है। मैं पहले जरूरी काम करूँगा और उसके बाद आराम करूँगा।",
+
+          english:
+            "I am a little tired today, but I have to finish my work. I will do the important tasks first and rest after that.",
+
+          words: [
+            { english: "a little", hindi: "थोड़ा" },
+            { english: "tired", hindi: "थका हुआ" },
+            { english: "have to", hindi: "करना है" },
+            { english: "finish", hindi: "पूरा करना" },
+            { english: "important", hindi: "महत्वपूर्ण" },
+            { english: "tasks", hindi: "काम / कार्य" },
+            { english: "first", hindi: "पहले" },
+            { english: "rest", hindi: "आराम करना" },
+          ],
+        },
+
+        {
+          hindi:
+            "मैं हर दिन थोड़ा समय अंग्रेज़ी सीखने के लिए देता हूँ। मैं नए शब्द सीखता हूँ और उन्हें वाक्यों में इस्तेमाल करने की कोशिश करता हूँ।",
+
+          english:
+            "I spend some time learning English every day. I learn new words and try to use them in sentences.",
+
+          words: [
+            { english: "spend", hindi: "समय बिताना" },
+            { english: "learning", hindi: "सीखना" },
+            { english: "every day", hindi: "हर दिन" },
+            { english: "new", hindi: "नए" },
+            { english: "words", hindi: "शब्द" },
+            { english: "try", hindi: "कोशिश करना" },
+            { english: "use", hindi: "इस्तेमाल करना" },
+            { english: "sentences", hindi: "वाक्य" },
+          ],
+        },
+
+        // =========================
+        // DAILY CONVERSATION
+        // =========================
+
+        {
+          hindi:
+            "सुबह मेरे दोस्त ने मुझे फोन किया और पूछा कि मैं कहाँ हूँ। मैंने उसे बताया कि मैं घर पर हूँ और थोड़ी देर में बाहर जाने वाला हूँ।",
+
+          english:
+            "My friend called me in the morning and asked where I was. I told him that I was at home and would go out after a while.",
+
+          words: [
+            { english: "called", hindi: "फोन किया" },
+            { english: "asked", hindi: "पूछा" },
+            { english: "where", hindi: "कहाँ" },
+            { english: "told", hindi: "बताया" },
+            { english: "at home", hindi: "घर पर" },
+            { english: "go out", hindi: "बाहर जाना" },
+            { english: "after a while", hindi: "थोड़ी देर बाद" },
+          ],
+        },
+
+        {
+          hindi:
+            "मैंने अपने भाई से कमरे की सफाई करने को कहा। उसने कहा कि वह अपना काम पूरा करने के बाद कमरा साफ करेगा।",
+
+          english:
+            "I asked my brother to clean the room. He said that he would clean it after finishing his work.",
+
+          words: [
+            { english: "asked", hindi: "कहा / पूछा" },
+            { english: "brother", hindi: "भाई" },
+            { english: "clean", hindi: "साफ करना" },
+            { english: "said", hindi: "कहा" },
+            { english: "would", hindi: "करता / करेगा" },
+            { english: "after", hindi: "बाद" },
+            { english: "finishing", hindi: "पूरा करने के बाद" },
+          ],
+        },
+
+        {
+          hindi:
+            "अगर मुझे समय मिला, तो मैं शाम को पार्क जाऊँगा। मैं वहाँ थोड़ा चलूँगा और फिर घर वापस आ जाऊँगा।",
+
+          english:
+            "If I get time, I will go to the park in the evening. I will walk there for a while and then come back home.",
+
+          words: [
+            { english: "if", hindi: "अगर" },
+            { english: "get time", hindi: "समय मिलना" },
+            { english: "evening", hindi: "शाम" },
+            { english: "walk", hindi: "चलना" },
+            { english: "there", hindi: "वहाँ" },
+            { english: "then", hindi: "फिर" },
+            { english: "come back", hindi: "वापस आना" },
+          ],
+        },
+
+        // =========================
+        // PROFESSIONAL PARAGRAPHS
+        // =========================
+
+        {
+          hindi:
+            "मैं रोज़ समय पर ऑफिस पहुँचने की कोशिश करता हूँ। ऑफिस पहुँचने के बाद मैं अपने ईमेल चेक करता हूँ और दिन के जरूरी कामों की सूची बनाता हूँ।",
+
+          english:
+            "I try to reach the office on time every day. After reaching the office, I check my emails and make a list of the important tasks for the day.",
+
+          words: [
+            { english: "try", hindi: "कोशिश करना" },
+            { english: "reach", hindi: "पहुँचना" },
+            { english: "office", hindi: "कार्यालय / ऑफिस" },
+            { english: "on time", hindi: "समय पर" },
+            { english: "check", hindi: "जाँच करना / देखना" },
+            { english: "emails", hindi: "ईमेल" },
+            { english: "make a list", hindi: "सूची बनाना" },
+            { english: "tasks", hindi: "कार्य / काम" },
+          ],
+        },
+
+        {
+          hindi:
+            "आज हमारी टीम की एक महत्वपूर्ण मीटिंग थी। हमने प्रोजेक्ट की प्रगति पर चर्चा की और अगले चरण के लिए कुछ जरूरी फैसले लिए।",
+
+          english:
+            "Our team had an important meeting today. We discussed the progress of the project and made some important decisions for the next step.",
+
+          words: [
+            { english: "team", hindi: "टीम" },
+            { english: "meeting", hindi: "बैठक / मीटिंग" },
+            { english: "discussed", hindi: "चर्चा की" },
+            { english: "progress", hindi: "प्रगति" },
+            { english: "project", hindi: "परियोजना / प्रोजेक्ट" },
+            { english: "decisions", hindi: "फैसले" },
+            { english: "next step", hindi: "अगला चरण" },
+          ],
+        },
+
+        {
+          hindi:
+            "मेरे मैनेजर ने मुझे एक नया काम दिया है। उन्होंने कहा कि यह काम इस सप्ताह के अंत तक पूरा होना चाहिए। मैं पहले योजना बनाऊँगा और फिर काम शुरू करूँगा।",
+
+          english:
+            "My manager has given me a new task. He said that the task should be completed by the end of this week. I will make a plan first and then start the work.",
+
+          words: [
+            { english: "manager", hindi: "प्रबंधक / मैनेजर" },
+            { english: "given", hindi: "दिया है" },
+            { english: "task", hindi: "कार्य / काम" },
+            { english: "completed", hindi: "पूरा किया हुआ" },
+            { english: "by the end", hindi: "अंत तक" },
+            { english: "this week", hindi: "इस सप्ताह" },
+            { english: "plan", hindi: "योजना" },
+            { english: "start", hindi: "शुरू करना" },
+          ],
+        },
+
+        {
+          hindi:
+            "मैंने आज एक ग्राहक से बात की। ग्राहक को हमारे उत्पाद के बारे में कुछ जानकारी चाहिए थी। मैंने उसकी सभी समस्याओं को ध्यान से सुना और उसे सही जानकारी दी।",
+
+          english:
+            "I spoke with a customer today. The customer needed some information about our product. I listened to all his concerns carefully and provided him with the correct information.",
+
+          words: [
+            { english: "spoke", hindi: "बात की" },
+            { english: "customer", hindi: "ग्राहक" },
+            { english: "information", hindi: "जानकारी" },
+            { english: "product", hindi: "उत्पाद" },
+            { english: "concerns", hindi: "समस्याएँ / चिंताएँ" },
+            { english: "carefully", hindi: "ध्यान से" },
+            { english: "provided", hindi: "प्रदान किया / दी" },
+            { english: "correct", hindi: "सही" },
+          ],
+        },
+
+        {
+          hindi:
+            "हमारी टीम एक नए प्रोजेक्ट पर काम कर रही है। इस प्रोजेक्ट को पूरा करने के लिए हमें एक-दूसरे के साथ मिलकर काम करना होगा।",
+
+          english:
+            "Our team is working on a new project. We need to work together to complete this project successfully.",
+
+          words: [
+            { english: "working on", hindi: "पर काम करना" },
+            { english: "project", hindi: "प्रोजेक्ट" },
+            { english: "need to", hindi: "करने की ज़रूरत है" },
+            { english: "together", hindi: "एक साथ" },
+            { english: "complete", hindi: "पूरा करना" },
+            { english: "successfully", hindi: "सफलतापूर्वक" },
+          ],
+        },
+
+        {
+          hindi:
+            "मीटिंग के दौरान हमने कई महत्वपूर्ण विषयों पर बात की। सभी सदस्यों ने अपने विचार साझा किए और हमने सबसे अच्छा समाधान चुनने की कोशिश की।",
+
+          english:
+            "During the meeting, we discussed several important topics. All the members shared their ideas, and we tried to choose the best solution.",
+
+          words: [
+            { english: "during", hindi: "के दौरान" },
+            { english: "several", hindi: "कई" },
+            { english: "topics", hindi: "विषय" },
+            { english: "members", hindi: "सदस्य" },
+            { english: "shared", hindi: "साझा किए" },
+            { english: "ideas", hindi: "विचार" },
+            { english: "choose", hindi: "चुनना" },
+            { english: "solution", hindi: "समाधान" },
+          ],
+        },
+
+        {
+          hindi:
+            "मैंने अपने मैनेजर को प्रोजेक्ट की वर्तमान स्थिति के बारे में बताया। मैंने यह भी बताया कि हमने अब तक क्या काम पूरा किया है और आगे क्या करना बाकी है।",
+
+          english:
+            "I updated my manager about the current status of the project. I also explained what we have completed so far and what still needs to be done.",
+
+          words: [
+            { english: "updated", hindi: "जानकारी दी / अपडेट किया" },
+            { english: "current", hindi: "वर्तमान" },
+            { english: "status", hindi: "स्थिति" },
+            { english: "explained", hindi: "समझाया" },
+            { english: "completed", hindi: "पूरा किया" },
+            { english: "so far", hindi: "अब तक" },
+            { english: "still", hindi: "अभी भी" },
+            { english: "needs to be done", hindi: "किया जाना बाकी है" },
+          ],
+        },
+
+        {
+          hindi:
+            "अगर हमें यह प्रोजेक्ट समय पर पूरा करना है, तो हमें अपने काम की सही योजना बनानी होगी। हर व्यक्ति को अपनी जिम्मेदारी समय पर पूरी करनी होगी।",
+
+          english:
+            "If we want to complete this project on time, we need to plan our work properly. Everyone must complete their responsibility on time.",
+
+          words: [
+            { english: "complete", hindi: "पूरा करना" },
+            { english: "on time", hindi: "समय पर" },
+            { english: "plan", hindi: "योजना बनाना" },
+            { english: "properly", hindi: "सही तरीके से" },
+            { english: "everyone", hindi: "हर कोई" },
+            { english: "must", hindi: "ज़रूर करना चाहिए" },
+            { english: "responsibility", hindi: "जिम्मेदारी" },
+          ],
+        },
+
+        {
+          hindi:
+            "मैंने आज एक रिपोर्ट तैयार की और उसे अपने मैनेजर को भेज दिया। रिपोर्ट में प्रोजेक्ट की प्रगति, मुख्य समस्याएँ और अगले कदमों की जानकारी दी गई है।",
+
+          english:
+            "I prepared a report today and sent it to my manager. The report includes the project progress, main issues, and information about the next steps.",
+
+          words: [
+            { english: "prepared", hindi: "तैयार की" },
+            { english: "report", hindi: "रिपोर्ट" },
+            { english: "sent", hindi: "भेजी" },
+            { english: "includes", hindi: "शामिल है" },
+            { english: "progress", hindi: "प्रगति" },
+            { english: "main issues", hindi: "मुख्य समस्याएँ" },
+            { english: "next steps", hindi: "अगले कदम" },
+          ],
+        },
+
+        {
+          hindi:
+            "मुझे एक ईमेल मिला जिसमें एक जरूरी मीटिंग के बारे में जानकारी थी। मैंने ईमेल पढ़ा और मीटिंग के समय को अपने कैलेंडर में नोट कर लिया।",
+
+          english:
+            "I received an email about an important meeting. I read the email and noted the meeting time in my calendar.",
+
+          words: [
+            { english: "received", hindi: "प्राप्त किया / मिला" },
+            { english: "email", hindi: "ईमेल" },
+            { english: "important", hindi: "महत्वपूर्ण" },
+            { english: "meeting", hindi: "मीटिंग" },
+            { english: "read", hindi: "पढ़ा" },
+            { english: "noted", hindi: "नोट किया" },
+            { english: "calendar", hindi: "कैलेंडर" },
+          ],
+        },
+
+        {
+          hindi:
+            "हमने ग्राहक की समस्या को समझने के लिए उससे बात की। ग्राहक ने अपनी समस्या बताई और हमारी टीम ने उसे जल्द से जल्द हल करने का भरोसा दिया।",
+
+          english:
+            "We spoke with the customer to understand the problem. The customer explained the issue, and our team promised to resolve it as soon as possible.",
+
+          words: [
+            { english: "understand", hindi: "समझना" },
+            { english: "problem", hindi: "समस्या" },
+            { english: "explained", hindi: "समझाया / बताया" },
+            { english: "issue", hindi: "समस्या" },
+            { english: "promised", hindi: "वादा किया" },
+            { english: "resolve", hindi: "हल करना" },
+            { english: "as soon as possible", hindi: "जितनी जल्दी हो सके" },
+          ],
+        },
+
+        {
+          hindi:
+            "मेरी टीम में एक नया सदस्य शामिल हुआ है। मैंने उसे हमारी टीम के काम और प्रक्रिया के बारे में बताया। मुझे उम्मीद है कि वह जल्दी से टीम के साथ काम करना सीख जाएगा।",
+
+          english:
+            "A new member has joined my team. I explained our team's work and process to him. I hope he will quickly learn how to work with the team.",
+
+          words: [
+            { english: "member", hindi: "सदस्य" },
+            { english: "joined", hindi: "शामिल हुआ" },
+            { english: "explained", hindi: "समझाया" },
+            { english: "process", hindi: "प्रक्रिया" },
+            { english: "hope", hindi: "उम्मीद करना" },
+            { english: "quickly", hindi: "जल्दी से" },
+            { english: "learn", hindi: "सीखना" },
+          ],
+        },
+
+        {
+          hindi:
+            "काम के दौरान कभी-कभी समस्याएँ आती हैं। ऐसी स्थिति में हमें घबराना नहीं चाहिए। हमें समस्या को समझना चाहिए और उसका सही समाधान ढूँढना चाहिए।",
+
+          english:
+            "Sometimes problems happen at work. In such situations, we should not panic. We should understand the problem and find the right solution.",
+
+          words: [
+            { english: "sometimes", hindi: "कभी-कभी" },
+            { english: "problems", hindi: "समस्याएँ" },
+            { english: "at work", hindi: "काम के दौरान" },
+            { english: "situations", hindi: "स्थितियाँ" },
+            { english: "panic", hindi: "घबराना" },
+            { english: "find", hindi: "ढूँढना" },
+            { english: "solution", hindi: "समाधान" },
+          ],
+        },
+
+        {
+          hindi:
+            "मैं अपने काम को बेहतर बनाने के लिए रोज़ कुछ नया सीखने की कोशिश करता हूँ। मेरा मानना है कि लगातार सीखना और अभ्यास करना सफलता के लिए बहुत जरूरी है।",
+
+          english:
+            "I try to learn something new every day to improve my work. I believe that continuous learning and practice are very important for success.",
+
+          words: [
+            { english: "improve", hindi: "सुधारना" },
+            { english: "something new", hindi: "कुछ नया" },
+            { english: "believe", hindi: "मानना" },
+            { english: "continuous", hindi: "लगातार" },
+            { english: "learning", hindi: "सीखना" },
+            { english: "practice", hindi: "अभ्यास" },
+            { english: "success", hindi: "सफलता" },
+          ],
+        },
+
+        {
+          hindi:
+            "एक अच्छे प्रोफेशनल के लिए समय का सही उपयोग करना बहुत जरूरी है। हमें अपने जरूरी काम पहले पूरे करने चाहिए और कम जरूरी काम बाद में करने चाहिए।",
+
+          english:
+            "Using time properly is very important for a good professional. We should complete important tasks first and do less important tasks later.",
+
+          words: [
+            { english: "using time", hindi: "समय का उपयोग करना" },
+            { english: "properly", hindi: "सही तरीके से" },
+            { english: "professional", hindi: "पेशेवर" },
+            { english: "complete", hindi: "पूरा करना" },
+            { english: "important tasks", hindi: "महत्वपूर्ण कार्य" },
+            { english: "less important", hindi: "कम महत्वपूर्ण" },
+            { english: "later", hindi: "बाद में" },
+          ],
+        },
+
+        {
+          hindi:
+            "कल हमारी टीम की एक महत्वपूर्ण प्रस्तुति है। इसलिए हम आज सभी स्लाइड्स की जाँच कर रहे हैं और यह सुनिश्चित कर रहे हैं कि सभी जानकारी सही हो।",
+
+          english:
+            "Our team has an important presentation tomorrow. So, we are checking all the slides today and making sure that all the information is correct.",
+
+          words: [
+            { english: "presentation", hindi: "प्रस्तुति" },
+            { english: "tomorrow", hindi: "कल" },
+            { english: "slides", hindi: "स्लाइड्स" },
+            { english: "checking", hindi: "जाँच करना" },
+            { english: "making sure", hindi: "सुनिश्चित करना" },
+            { english: "information", hindi: "जानकारी" },
+            { english: "correct", hindi: "सही" },
+          ],
+        },
+
+        {
+          hindi:
+            "मीटिंग खत्म होने के बाद मैंने सभी जरूरी बिंदुओं को नोट किया। फिर मैंने टीम के सदस्यों को अगले काम के बारे में बताया ताकि सभी को अपनी जिम्मेदारी पता हो।",
+
+          english:
+            "After the meeting, I noted all the important points. Then I informed the team members about the next tasks so that everyone knew their responsibilities.",
+
+          words: [
+            { english: "after the meeting", hindi: "मीटिंग के बाद" },
+            { english: "noted", hindi: "नोट किया" },
+            { english: "points", hindi: "बिंदु" },
+            { english: "informed", hindi: "जानकारी दी" },
+            { english: "members", hindi: "सदस्य" },
+            { english: "responsibilities", hindi: "जिम्मेदारियाँ" },
+          ],
+        },
+
+        {
+          hindi:
+            "मैं अपने ग्राहक के साथ हमेशा विनम्रता से बात करने की कोशिश करता हूँ। अगर ग्राहक को कोई समस्या होती है, तो मैं पहले उसकी बात ध्यान से सुनता हूँ और फिर समाधान बताता हूँ।",
+
+          english:
+            "I always try to speak politely with my customers. If a customer has a problem, I first listen carefully and then provide a solution.",
+
+          words: [
+            { english: "always", hindi: "हमेशा" },
+            { english: "politely", hindi: "विनम्रता से" },
+            { english: "customers", hindi: "ग्राहक" },
+            { english: "problem", hindi: "समस्या" },
+            { english: "listen carefully", hindi: "ध्यान से सुनना" },
+            { english: "provide", hindi: "प्रदान करना / देना" },
+            { english: "solution", hindi: "समाधान" },
+          ],
+        },
+
+        {
+          hindi:
+            "आज मैंने अपने दिन के सभी जरूरी काम पूरे कर लिए। कुछ काम उम्मीद से ज्यादा समय ले गए, लेकिन मैंने अपनी प्राथमिकताओं पर ध्यान दिया और सभी जरूरी काम समय पर पूरे किए।",
+
+          english:
+            "Today, I completed all the important tasks for the day. Some tasks took more time than expected, but I focused on my priorities and completed the important work on time.",
+
+          words: [
+            { english: "completed", hindi: "पूरा किया" },
+            { english: "tasks", hindi: "कार्य" },
+            { english: "took time", hindi: "समय लगा" },
+            { english: "expected", hindi: "उम्मीद की गई" },
+            { english: "focused on", hindi: "ध्यान केंद्रित किया" },
+            { english: "priorities", hindi: "प्राथमिकताएँ" },
+            { english: "on time", hindi: "समय पर" },
+          ],
+        },
+
+        // =========================
+        // PROFESSIONAL COMMUNICATION
+        // =========================
+
+        {
+          hindi:
+            "नमस्ते, मैं आपको इस प्रोजेक्ट की वर्तमान स्थिति के बारे में अपडेट देना चाहता हूँ। हमने अब तक अधिकांश काम पूरा कर लिया है और बाकी काम पर टीम काम कर रही है।",
+
+          english:
+            "Hello, I would like to give you an update on the current status of this project. We have completed most of the work so far, and the team is working on the remaining tasks.",
+
+          words: [
+            { english: "would like", hindi: "चाहूँगा / चाहेंगे" },
+            { english: "give you an update", hindi: "आपको जानकारी देना" },
+            { english: "current status", hindi: "वर्तमान स्थिति" },
+            { english: "most of", hindi: "अधिकांश" },
+            { english: "so far", hindi: "अब तक" },
+            { english: "remaining", hindi: "बाकी / शेष" },
+          ],
+        },
+
+        {
+          hindi:
+            "कृपया इस दस्तावेज़ की समीक्षा करें और अगर आपको कोई बदलाव जरूरी लगता है, तो मुझे बताएं। आपकी प्रतिक्रिया हमारे लिए बहुत उपयोगी होगी।",
+
+          english:
+            "Please review this document and let me know if you think any changes are needed. Your feedback will be very helpful to us.",
+
+          words: [
+            { english: "review", hindi: "समीक्षा करना" },
+            { english: "document", hindi: "दस्तावेज़" },
+            { english: "changes", hindi: "बदलाव" },
+            { english: "needed", hindi: "ज़रूरी" },
+            { english: "let me know", hindi: "मुझे बताना" },
+            { english: "feedback", hindi: "प्रतिक्रिया" },
+            { english: "helpful", hindi: "उपयोगी" },
+          ],
+        },
+
+        {
+          hindi:
+            "हमने ग्राहक की आवश्यकताओं को समझने के लिए एक मीटिंग आयोजित की। मीटिंग में ग्राहक ने अपनी अपेक्षाएँ बताईं और हमारी टीम ने उन्हें पूरा करने के लिए एक योजना तैयार की।",
+
+          english:
+            "We organized a meeting to understand the customer's requirements. During the meeting, the customer explained his expectations, and our team prepared a plan to meet them.",
+
+          words: [
+            { english: "organized", hindi: "आयोजित की" },
+            { english: "requirements", hindi: "आवश्यकताएँ" },
+            { english: "expectations", hindi: "अपेक्षाएँ" },
+            { english: "prepared", hindi: "तैयार किया" },
+            { english: "meet requirements", hindi: "आवश्यकताओं को पूरा करना" },
+            { english: "plan", hindi: "योजना" },
+          ],
+        },
+
+        {
+          hindi:
+            "अगर किसी काम में देरी होने की संभावना है, तो हमें अपने मैनेजर और टीम को समय पर जानकारी देनी चाहिए। इससे टीम को अपनी योजना बदलने और सही निर्णय लेने में मदद मिलती है।",
+
+          english:
+            "If there is a possibility of a delay, we should inform our manager and team on time. This helps the team change the plan and make the right decision.",
+
+          words: [
+            { english: "possibility", hindi: "संभावना" },
+            { english: "delay", hindi: "देरी" },
+            { english: "inform", hindi: "जानकारी देना" },
+            { english: "on time", hindi: "समय पर" },
+            { english: "helps", hindi: "मदद करता है" },
+            { english: "change the plan", hindi: "योजना बदलना" },
+            { english: "decision", hindi: "निर्णय" },
+          ],
+        },
+
+        {
+          hindi:
+            "एक सफल टीम में सभी लोग एक-दूसरे की मदद करते हैं। वे अपनी जिम्मेदारियों को समझते हैं, समय पर काम पूरा करते हैं और किसी समस्या के आने पर मिलकर उसका समाधान ढूँढते हैं।",
+
+          english:
+            "In a successful team, everyone helps each other. They understand their responsibilities, complete their work on time, and work together to solve problems when they occur.",
+
+          words: [
+            { english: "successful", hindi: "सफल" },
+            { english: "each other", hindi: "एक-दूसरे" },
+            { english: "responsibilities", hindi: "जिम्मेदारियाँ" },
+            { english: "occur", hindi: "होना / घटित होना" },
+            { english: "solve", hindi: "हल करना" },
+            { english: "work together", hindi: "मिलकर काम करना" },
+          ],
+        },
+
+        {
+          hindi:
+            "मैं अपने काम में गलतियों से सीखने की कोशिश करता हूँ। अगर मुझसे कोई गलती होती है, तो मैं उसे स्वीकार करता हूँ, उसका कारण समझता हूँ और भविष्य में उसे दोबारा न करने की कोशिश करता हूँ।",
+
+          english:
+            "I try to learn from my mistakes at work. If I make a mistake, I accept it, understand the reason, and try not to repeat it in the future.",
+
+          words: [
+            { english: "mistakes", hindi: "गलतियाँ" },
+            { english: "learn from", hindi: "से सीखना" },
+            { english: "accept", hindi: "स्वीकार करना" },
+            { english: "reason", hindi: "कारण" },
+            { english: "repeat", hindi: "दोहराना" },
+            { english: "in the future", hindi: "भविष्य में" },
+          ],
+        },
+        {
+          hindi:
+            "आज मैंने अपने प्रोजेक्ट के एक नए फीचर पर काम किया। सबसे पहले मैंने requirements को समझा और फिर existing code को review किया। उसके बाद मैंने implementation शुरू किया। फीचर को पूरा करने के बाद मैंने उसका test किया ताकि यह सुनिश्चित किया जा सके कि सब कुछ सही तरीके से काम कर रहा है।",
+
+          english:
+            "Today, I worked on a new feature for my project. First, I understood the requirements and then reviewed the existing code. After that, I started the implementation. Once I completed the feature, I tested it to make sure that everything was working correctly.",
+
+          words: [
+            { english: "project", hindi: "प्रोजेक्ट" },
+            { english: "feature", hindi: "सुविधा / फीचर" },
+            { english: "requirements", hindi: "आवश्यकताएँ" },
+            { english: "understood", hindi: "समझा" },
+            { english: "existing code", hindi: "मौजूदा कोड" },
+            { english: "reviewed", hindi: "समीक्षा की" },
+            { english: "implementation", hindi: "कार्यान्वयन" },
+            { english: "completed", hindi: "पूरा किया" },
+            { english: "tested", hindi: "टेस्ट किया" },
+            { english: "correctly", hindi: "सही तरीके से" },
+          ],
+        },
+
+        {
+          hindi:
+            "आज हमारी टीम की daily stand-up meeting थी। मैंने टीम को बताया कि मैंने कल क्या काम किया और आज मैं किन tasks पर काम करने वाला हूँ। मैंने यह भी बताया कि मुझे अभी किसी तरह की कोई blocker नहीं है। मेरे manager ने कुछ questions पूछे और हमने अगले sprint की priorities पर भी चर्चा की।",
+
+          english:
+            "We had our daily stand-up meeting today. I told the team what I worked on yesterday and which tasks I would be working on today. I also mentioned that I currently had no blockers. My manager asked a few questions, and we also discussed the priorities for the next sprint.",
+
+          words: [
+            { english: "daily stand-up", hindi: "दैनिक मीटिंग" },
+            { english: "tasks", hindi: "कार्य" },
+            { english: "mentioned", hindi: "बताया / उल्लेख किया" },
+            { english: "currently", hindi: "वर्तमान में" },
+            { english: "blocker", hindi: "काम रोकने वाली समस्या" },
+            { english: "manager", hindi: "प्रबंधक" },
+            { english: "priorities", hindi: "प्राथमिकताएँ" },
+            { english: "sprint", hindi: "एक निश्चित development cycle" },
+            { english: "discussed", hindi: "चर्चा की" },
+          ],
+        },
+
+        {
+          hindi:
+            "मुझे आज एक bug मिला जो application के production environment में दिखाई दे रहा था। मैंने सबसे पहले issue को reproduce किया और logs को check किया। उसके बाद मैंने root cause identify किया और एक possible solution तैयार किया। मैंने fix को test करने के बाद उसे code review के लिए भेज दिया।",
+
+          english:
+            "I found a bug today that was occurring in the production environment. First, I reproduced the issue and checked the logs. Then, I identified the root cause and prepared a possible solution. After testing the fix, I submitted it for code review.",
+
+          words: [
+            { english: "bug", hindi: "सॉफ्टवेयर की समस्या" },
+            {
+              english: "production environment",
+              hindi: "वास्तविक उपयोग वाला environment",
+            },
+            { english: "reproduce", hindi: "समस्या को दोबारा उत्पन्न करना" },
+            { english: "issue", hindi: "समस्या" },
+            { english: "logs", hindi: "सिस्टम रिकॉर्ड" },
+            { english: "root cause", hindi: "मूल कारण" },
+            { english: "identify", hindi: "पहचानना" },
+            { english: "solution", hindi: "समाधान" },
+            { english: "code review", hindi: "कोड की समीक्षा" },
+          ],
+        },
+
+        {
+          hindi:
+            "मेरे colleague ने मुझसे एक technical issue के बारे में पूछा। पहले मैंने उसकी problem को ध्यान से सुना और कुछ questions पूछकर पूरी जानकारी समझी। फिर मैंने उसे एक possible solution समझाया। अगर वह solution काम नहीं करता, तो हम logs और configuration को दोबारा check करेंगे।",
+
+          english:
+            "My colleague asked me about a technical issue. First, I listened to his problem carefully and asked a few questions to understand the complete situation. Then, I explained a possible solution to him. If that solution does not work, we will check the logs and configuration again.",
+
+          words: [
+            { english: "colleague", hindi: "सहकर्मी" },
+            { english: "technical issue", hindi: "तकनीकी समस्या" },
+            { english: "carefully", hindi: "ध्यान से" },
+            { english: "complete situation", hindi: "पूरी स्थिति" },
+            { english: "explained", hindi: "समझाया" },
+            { english: "possible solution", hindi: "संभावित समाधान" },
+            { english: "configuration", hindi: "सेटिंग / कॉन्फ़िगरेशन" },
+            { english: "again", hindi: "दोबारा" },
+          ],
+        },
+
+        {
+          hindi:
+            "अगर मुझे किसी task के बारे में clarity नहीं होती है, तो मैं अनुमान लगाने के बजाय अपने manager या teammate से clarification माँगता हूँ। इससे गलत implementation करने की संभावना कम हो जाती है और समय भी बचता है। मेरा मानना है कि किसी भी task को शुरू करने से पहले requirements को अच्छी तरह समझना जरूरी है।",
+
+          english:
+            "If I am not clear about a task, I ask my manager or teammate for clarification instead of making assumptions. This reduces the chances of incorrect implementation and also saves time. I believe it is important to understand the requirements properly before starting any task.",
+
+          words: [
+            { english: "clarity", hindi: "स्पष्टता" },
+            { english: "instead of", hindi: "के बजाय" },
+            { english: "assumptions", hindi: "अनुमान" },
+            { english: "clarification", hindi: "स्पष्टीकरण" },
+            { english: "reduces", hindi: "कम करता है" },
+            { english: "chances", hindi: "संभावनाएँ" },
+            { english: "incorrect", hindi: "गलत" },
+            { english: "implementation", hindi: "कार्यान्वयन" },
+            { english: "properly", hindi: "ठीक से" },
+          ],
+        },
+
+        {
+          hindi:
+            "जब मैं किसी existing project पर काम करता हूँ, तो सबसे पहले मैं उसके codebase को समझने की कोशिश करता हूँ। मैं project structure, database, APIs और important modules को देखता हूँ। इसके बाद मैं application को locally run करता हूँ ताकि मुझे उसका overall flow समझ में आ सके।",
+
+          english:
+            "When I work on an existing project, I first try to understand its codebase. I look at the project structure, database, APIs, and important modules. After that, I run the application locally so that I can understand its overall flow.",
+
+          words: [
+            { english: "existing project", hindi: "मौजूदा प्रोजेक्ट" },
+            { english: "codebase", hindi: "प्रोजेक्ट का पूरा source code" },
+            { english: "project structure", hindi: "प्रोजेक्ट की संरचना" },
+            { english: "database", hindi: "डेटाबेस" },
+            {
+              english: "APIs",
+              hindi: "सिस्टम के बीच communication interfaces",
+            },
+            { english: "modules", hindi: "प्रोजेक्ट के अलग-अलग हिस्से" },
+            { english: "locally", hindi: "अपने local computer पर" },
+            { english: "overall flow", hindi: "पूरी कार्यप्रणाली" },
+          ],
+        },
+
+        {
+          hindi:
+            "Code review के दौरान मैं केवल code की functionality नहीं देखता, बल्कि readability, performance और maintainability पर भी ध्यान देता हूँ। अगर मुझे कोई improvement दिखाई देती है, तो मैं अपने teammate को politely suggest करता हूँ। मेरा उद्देश्य किसी की गलती निकालना नहीं, बल्कि code की quality को बेहतर बनाना होता है।",
+
+          english:
+            "During a code review, I do not only check the functionality of the code, but I also pay attention to readability, performance, and maintainability. If I notice any improvement, I politely suggest it to my teammate. My goal is not to point out someone's mistake, but to improve the quality of the code.",
+
+          words: [
+            { english: "code review", hindi: "कोड की समीक्षा" },
+            { english: "functionality", hindi: "कार्य करने की क्षमता" },
+            { english: "readability", hindi: "आसानी से पढ़े जाने की क्षमता" },
+            { english: "performance", hindi: "प्रदर्शन / गति" },
+            {
+              english: "maintainability",
+              hindi: "आसानी से maintain करने की क्षमता",
+            },
+            { english: "notice", hindi: "ध्यान देना" },
+            { english: "politely", hindi: "विनम्रता से" },
+            { english: "suggest", hindi: "सुझाव देना" },
+            { english: "improve", hindi: "सुधारना" },
+          ],
+        },
+
+        {
+          hindi:
+            "अगर interviewer मुझसे पूछता है कि मैंने किसी difficult problem को कैसे solve किया, तो मैं पहले problem का context बताता हूँ। फिर मैं बताता हूँ कि मैंने root cause कैसे identify किया, कौन-कौन से approaches try किए और आखिर में मैंने कौन सा solution implement किया। अंत में मैं result भी explain करता हूँ।",
+
+          english:
+            "If an interviewer asks me how I solved a difficult problem, I first explain the context of the problem. Then, I explain how I identified the root cause, which approaches I tried, and which solution I finally implemented. Finally, I also explain the result.",
+
+          words: [
+            { english: "interviewer", hindi: "साक्षात्कारकर्ता" },
+            { english: "difficult problem", hindi: "कठिन समस्या" },
+            { english: "context", hindi: "संदर्भ / पृष्ठभूमि" },
+            { english: "root cause", hindi: "मूल कारण" },
+            { english: "approaches", hindi: "तरीके" },
+            { english: "implemented", hindi: "लागू किया" },
+            { english: "finally", hindi: "अंत में" },
+            { english: "result", hindi: "परिणाम" },
+          ],
+        },
+
+        {
+          hindi:
+            "Interview में अगर मुझसे किसी technology के बारे में पूछा जाता है जिसे मैंने अभी तक use नहीं किया है, तो मैं ईमानदारी से बताता हूँ कि मुझे उसका practical experience नहीं है। लेकिन मैं यह भी बताता हूँ कि मैंने उस technology के बारे में basic concepts पढ़े हैं और जरूरत पड़ने पर मैं उसे जल्दी सीख सकता हूँ।",
+
+          english:
+            "If I am asked about a technology that I have not used yet in an interview, I honestly explain that I do not have practical experience with it. However, I also mention that I have studied its basic concepts and that I can learn it quickly if required.",
+
+          words: [
+            { english: "technology", hindi: "तकनीक" },
+            { english: "practical experience", hindi: "व्यावहारिक अनुभव" },
+            { english: "honestly", hindi: "ईमानदारी से" },
+            { english: "basic concepts", hindi: "मूल अवधारणाएँ" },
+            { english: "studied", hindi: "अध्ययन किया" },
+            { english: "mention", hindi: "उल्लेख करना" },
+            { english: "required", hindi: "आवश्यक" },
+            { english: "quickly", hindi: "जल्दी" },
+          ],
+        },
+
+        {
+          hindi:
+            "आज मुझे एक task दिया गया जिसकी deadline काफी कम थी। मैंने पहले task को छोटे-छोटे हिस्सों में divide किया और सबसे important काम को पहले शुरू किया। अगर मुझे किसी dependency की जरूरत थी, तो मैंने उसे पहले ही communicate कर दिया। इस तरह मैं deadline के अंदर task पूरा कर पाया।",
+
+          english:
+            "Today, I was given a task with a very tight deadline. First, I divided the task into smaller parts and started with the most important work. If I needed any dependency, I communicated it in advance. This way, I was able to complete the task within the deadline.",
+
+          words: [
+            { english: "deadline", hindi: "अंतिम समय सीमा" },
+            { english: "tight deadline", hindi: "कम समय की deadline" },
+            { english: "divided", hindi: "विभाजित किया" },
+            { english: "smaller parts", hindi: "छोटे हिस्से" },
+            { english: "important", hindi: "महत्वपूर्ण" },
+            { english: "dependency", hindi: "निर्भरता" },
+            { english: "in advance", hindi: "पहले से" },
+            { english: "within", hindi: "के अंदर" },
+          ],
+        },
+
+        {
+          hindi:
+            "हमारी टीम में एक नया developer join हुआ है। मैंने उसे project architecture और development process समझाने में मदद की। मैंने उसे repository setup करने, application run करने और development environment configure करने में भी guide किया।",
+
+          english:
+            "A new developer has joined our team. I helped him understand the project architecture and development process. I also guided him through setting up the repository, running the application, and configuring the development environment.",
+
+          words: [
+            { english: "developer", hindi: "डेवलपर" },
+            { english: "joined", hindi: "शामिल हुआ" },
+            { english: "architecture", hindi: "सिस्टम की संरचना" },
+            { english: "development process", hindi: "विकास प्रक्रिया" },
+            { english: "repository", hindi: "कोड repository" },
+            { english: "setup", hindi: "सेटअप करना" },
+            { english: "configure", hindi: "कॉन्फ़िगर करना" },
+            { english: "environment", hindi: "वातावरण / सिस्टम सेटअप" },
+            { english: "guided", hindi: "मार्गदर्शन किया" },
+          ],
+        },
+
+        {
+          hindi:
+            "जब production में कोई critical issue आता है, तो मैं पहले impact को समझने की कोशिश करता हूँ। उसके बाद मैं relevant logs और monitoring tools check करता हूँ। अगर issue users को प्रभावित कर रहा होता है, तो मैं team को तुरंत inform करता हूँ और available solution के आधार पर आगे की action plan करता हूँ।",
+
+          english:
+            "When a critical issue occurs in production, I first try to understand its impact. After that, I check the relevant logs and monitoring tools. If the issue is affecting users, I immediately inform the team and plan the next action based on the available solution.",
+
+          words: [
+            { english: "critical issue", hindi: "गंभीर समस्या" },
+            { english: "occurs", hindi: "होती है" },
+            { english: "impact", hindi: "प्रभाव" },
+            { english: "relevant", hindi: "संबंधित" },
+            { english: "monitoring tools", hindi: "निगरानी करने वाले tools" },
+            { english: "affecting", hindi: "प्रभावित करना" },
+            { english: "immediately", hindi: "तुरंत" },
+            { english: "action plan", hindi: "कार्य योजना" },
+          ],
+        },
+
+        {
+          hindi:
+            "अगर मेरी टीम में किसी developer की राय मुझसे अलग होती है, तो मैं उसकी बात को ध्यान से सुनता हूँ। हम दोनों अपने approach के फायदे और नुकसान discuss करते हैं। अगर जरूरत हो, तो हम senior developer या architect से भी feedback लेते हैं। मेरे लिए सही solution तक पहुँचना personal opinion से ज्यादा important है।",
+
+          english:
+            "If a developer on my team has a different opinion from mine, I listen to his point of view carefully. We discuss the advantages and disadvantages of both approaches. If necessary, we also get feedback from a senior developer or architect. For me, reaching the right solution is more important than a personal opinion.",
+
+          words: [
+            { english: "different opinion", hindi: "अलग राय" },
+            { english: "point of view", hindi: "दृष्टिकोण" },
+            { english: "advantages", hindi: "फायदे" },
+            { english: "disadvantages", hindi: "नुकसान" },
+            { english: "approach", hindi: "तरीका" },
+            { english: "feedback", hindi: "प्रतिक्रिया / सुझाव" },
+            { english: "senior developer", hindi: "अनुभवी डेवलपर" },
+            { english: "reaching", hindi: "पहुँचना" },
+            { english: "personal opinion", hindi: "व्यक्तिगत राय" },
+          ],
+        },
+
+        {
+          hindi:
+            "मेरा manager अक्सर पूछता है कि किसी task की progress कैसी चल रही है। मैं उसे केवल यह नहीं बताता कि काम चल रहा है, बल्कि current status, completed work, pending work और possible risks के बारे में भी बताता हूँ। इससे पूरी team को situation समझने में आसानी होती है।",
+
+          english:
+            "My manager often asks me about the progress of a task. I do not simply tell him that the work is in progress. I also share the current status, completed work, pending work, and possible risks. This makes it easier for the entire team to understand the situation.",
+
+          words: [
+            { english: "progress", hindi: "प्रगति" },
+            { english: "in progress", hindi: "काम चल रहा है" },
+            { english: "current status", hindi: "वर्तमान स्थिति" },
+            { english: "completed work", hindi: "पूरा किया गया काम" },
+            { english: "pending work", hindi: "बाकी काम" },
+            { english: "possible risks", hindi: "संभावित जोखिम" },
+            { english: "entire team", hindi: "पूरी टीम" },
+            { english: "situation", hindi: "स्थिति" },
+          ],
+        },
+
+        {
+          hindi:
+            "जब मैं कोई नया feature develop करता हूँ, तो मैं केवल यह नहीं सोचता कि वह अभी काम कर रहा है या नहीं। मैं यह भी देखता हूँ कि code future में maintain करना कितना आसान होगा। मैं unnecessary complexity से बचने और simple तथा scalable solution बनाने की कोशिश करता हूँ।",
+
+          english:
+            "When I develop a new feature, I do not only think about whether it works right now. I also consider how easy the code will be to maintain in the future. I try to avoid unnecessary complexity and build a simple and scalable solution.",
+
+          words: [
+            { english: "develop", hindi: "विकसित करना" },
+            { english: "consider", hindi: "विचार करना" },
+            { english: "maintain", hindi: "रखरखाव करना" },
+            { english: "future", hindi: "भविष्य" },
+            { english: "avoid", hindi: "बचना" },
+            { english: "unnecessary", hindi: "अनावश्यक" },
+            { english: "complexity", hindi: "जटिलता" },
+            { english: "scalable", hindi: "बढ़ते load के साथ scale होने वाला" },
+          ],
+        },
+
+        {
+          hindi:
+            "एक अच्छे software engineer के लिए केवल coding skills होना ही काफी नहीं है। उसे communication, problem-solving और teamwork में भी अच्छा होना चाहिए। उसे requirements को समझना, सही questions पूछना और अपने ideas को clearly explain करना आना चाहिए।",
+
+          english:
+            "Having coding skills is not enough to be a good software engineer. A software engineer should also be good at communication, problem-solving, and teamwork. They should know how to understand requirements, ask the right questions, and explain their ideas clearly.",
+
+          words: [
+            { english: "coding skills", hindi: "कोडिंग कौशल" },
+            { english: "enough", hindi: "पर्याप्त" },
+            { english: "communication", hindi: "संचार" },
+            { english: "problem-solving", hindi: "समस्या समाधान" },
+            { english: "teamwork", hindi: "टीम के साथ काम करना" },
+            { english: "requirements", hindi: "आवश्यकताएँ" },
+            { english: "clearly", hindi: "स्पष्ट रूप से" },
+            { english: "explain", hindi: "समझाना" },
+          ],
+        },
+
+        {
+          hindi:
+            "Interview में मुझसे अक्सर पूछा जाता है कि मैं अपने काम को कैसे prioritize करता हूँ। मेरा approach यह है कि मैं पहले business impact, urgency और dependencies को समझता हूँ। उसके बाद मैं tasks को priority के हिसाब से arrange करता हूँ और अगर priorities बदलती हैं, तो मैं अपनी plan को भी accordingly adjust करता हूँ।",
+
+          english:
+            "In interviews, I am often asked how I prioritize my work. My approach is to first understand the business impact, urgency, and dependencies. Then, I arrange the tasks according to their priority. If the priorities change, I also adjust my plan accordingly.",
+
+          words: [
+            { english: "prioritize", hindi: "प्राथमिकता तय करना" },
+            { english: "business impact", hindi: "व्यावसायिक प्रभाव" },
+            { english: "urgency", hindi: "तत्काल आवश्यकता" },
+            { english: "dependencies", hindi: "निर्भरताएँ" },
+            { english: "according to", hindi: "के अनुसार" },
+            { english: "priority", hindi: "प्राथमिकता" },
+            { english: "adjust", hindi: "समायोजित करना" },
+            { english: "accordingly", hindi: "उसी के अनुसार" },
+          ],
+        },
+
+        {
+          hindi:
+            "अगर मुझे किसी project में कोई technical decision लेना होता है, तो मैं केवल अपनी पसंद के आधार पर decision नहीं लेता। मैं requirements, performance, scalability, maintainability और project constraints को ध्यान में रखता हूँ। जरूरत पड़ने पर मैं team के दूसरे members के साथ discussion करके final decision लेता हूँ।",
+
+          english:
+            "If I have to make a technical decision in a project, I do not make the decision based only on my personal preference. I consider the requirements, performance, scalability, maintainability, and project constraints. When necessary, I discuss the matter with other team members before making the final decision.",
+
+          words: [
+            { english: "technical decision", hindi: "तकनीकी निर्णय" },
+            { english: "personal preference", hindi: "व्यक्तिगत पसंद" },
+            { english: "performance", hindi: "प्रदर्शन" },
+            {
+              english: "scalability",
+              hindi: "बढ़ते load को संभालने की क्षमता",
+            },
+            {
+              english: "maintainability",
+              hindi: "आसानी से maintain करने की क्षमता",
+            },
+            { english: "constraints", hindi: "सीमाएँ" },
+            { english: "matter", hindi: "मामला / विषय" },
+            { english: "final decision", hindi: "अंतिम निर्णय" },
+          ],
+        },
+
+        {
+          hindi:
+            "पिछले project में मुझे एक ऐसी समस्या का सामना करना पड़ा जिसे शुरू में समझना काफी मुश्किल था। मैंने problem को छोटे हिस्सों में divide किया और एक-एक करके possibilities को eliminate किया। कई बार solution काम नहीं किया, लेकिन मैंने हर attempt से कुछ सीखा। आखिरकार मुझे root cause मिला और मैंने issue को successfully resolve कर दिया।",
+
+          english:
+            "In my previous project, I faced a problem that was quite difficult to understand initially. I divided the problem into smaller parts and eliminated the possibilities one by one. Several attempts did not work, but I learned something from each attempt. Eventually, I found the root cause and successfully resolved the issue.",
+
+          words: [
+            { english: "previous project", hindi: "पिछला प्रोजेक्ट" },
+            { english: "faced", hindi: "सामना किया" },
+            { english: "initially", hindi: "शुरुआत में" },
+            { english: "possibilities", hindi: "संभावनाएँ" },
+            { english: "eliminate", hindi: "हटा देना" },
+            { english: "attempts", hindi: "प्रयास" },
+            { english: "eventually", hindi: "आखिरकार" },
+            { english: "resolved", hindi: "समस्या का समाधान किया" },
+          ],
+        },
+
+        {
+          hindi:
+            "एक professional environment में communication बहुत important है। अगर मैं किसी task को समय पर पूरा नहीं कर पाऊँगा, तो मैं आखिरी समय तक इंतजार नहीं करता। मैं पहले ही अपने manager या team को inform कर देता हूँ और delay का reason बताता हूँ। इससे team को plan adjust करने का समय मिल जाता है।",
+
+          english:
+            "Communication is very important in a professional environment. If I realize that I will not be able to complete a task on time, I do not wait until the last moment. I inform my manager or team in advance and explain the reason for the delay. This gives the team enough time to adjust the plan.",
+
+          words: [
+            {
+              english: "professional environment",
+              hindi: "व्यावसायिक वातावरण",
+            },
+            { english: "realize", hindi: "महसूस / पता चलना" },
+            { english: "complete", hindi: "पूरा करना" },
+            { english: "on time", hindi: "समय पर" },
+            { english: "last moment", hindi: "आखिरी समय" },
+            { english: "inform", hindi: "सूचित करना" },
+            { english: "delay", hindi: "देरी" },
+            { english: "adjust", hindi: "समायोजित करना" },
+          ],
+        },
+      ];
+
+      /*
+      ==================================================
+      VARIABLES
+      ==================================================
+      */
+
+      const wordGrid = document.getElementById("wordGrid");
+      const wordCount = document.getElementById("wordCount");
+      const hindiSentence = document.getElementById("hindiSentence");
+      const englishAnswer = document.getElementById("englishAnswer");
+      const counter = document.getElementById("counter");
+      const searchInput = document.getElementById("search");
+
+      let paragraphMode = false;
+
+      let currentSentence = 0;
+
+      let selectedWords = [];
+
+      /*
+      ==================================================
+      SHOW WORDS
+      ==================================================
+      */
+
+      function renderWords(words = data.daily_use_english_words) {
+        wordGrid.innerHTML = "";
+
+        wordCount.textContent = `${words.length} words`;
+
+        if (words.length === 0) {
+          wordGrid.innerHTML = `
+          <div class="empty">
+            कोई word नहीं मिला।
+          </div>
+        `;
+
+          return;
+        }
+
+        words.forEach((word) => {
+          const card = document.createElement("div");
+
+          card.className = "word-card";
+
+          card.innerHTML = `
+          <div class="english">
+            ${word.english}
+          </div>
+
+          <div class="hindi">
+            ${word.hindi}
+          </div>
+        `;
+
+          /*
+              Word पर click करने पर
+              selected list में add होगा
+              */
+
+          card.addEventListener("click", () => {
+            card.classList.toggle("selected");
+
+            const index = selectedWords.indexOf(word.english);
+
+            if (index === -1) {
+              selectedWords.push(word.english);
+            } else {
+              selectedWords.splice(index, 1);
+            }
+          });
+
+          wordGrid.appendChild(card);
+        });
+      }
+
+      /*
+      ==================================================
+      SEARCH
+      ==================================================
+      */
+
+      function searchWords() {
+        const query = searchInput.value.trim().toLowerCase();
+
+        if (!query) {
+          renderWords();
+
+          return;
+        }
+
+        const filtered = data.daily_use_english_words.filter(
+          (word) =>
+            word.english.toLowerCase().includes(query) ||
+            word.hindi.toLowerCase().includes(query),
+        );
+
+        renderWords(filtered);
+      }
+
+      /*
+      ==================================================
+      SHOW SENTENCE
+      ==================================================
+      */
+
+      function showSentence() {
+        const sentence = sentences[currentSentence];
+
+        hindiSentence.textContent = sentence.hindi;
+
+        englishAnswer.textContent = sentence.english;
+
+        englishAnswer.style.display = "none";
+
+        counter.textContent = `Sentence ${currentSentence + 1} / ${sentences.length}`;
+      }
+
+      /*
+==================================================
+PARAGRAPH MODE
+==================================================
+*/
+
+      function toggleParagraph() {
+        paragraphMode = !paragraphMode;
+
+        if (paragraphMode) {
+          showParagraph();
+        } else {
+          showSentence();
+        }
+      }
+
+      /*
+==================================================
+SHOW PARAGRAPH
+==================================================
+*/
+
+      function showParagraph() {
+        const paragraph = paragraphs[currentSentence % paragraphs.length];
+
+        hindiSentence.textContent = paragraph.hindi;
+
+        englishAnswer.textContent = paragraph.english;
+
+        englishAnswer.style.display = "none";
+
+        counter.textContent = `Paragraph ${currentSentence + 1} / ${paragraphs.length}`;
+      }
+
+      /*
+==================================================
+SHOW PARAGRAPH ANSWER
+==================================================
+*/
+
+      function showParagraphAnswer() {
+        const paragraph = paragraphs[currentSentence % paragraphs.length];
+
+        let html = `
+    <div style="margin-bottom:12px;">
+      ${paragraph.english}
+    </div>
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:8px;
+    ">
+  `;
+
+        paragraph.words.forEach((word) => {
+          html += `
+      <div style="
+        padding:10px;
+        border-radius:8px;
+        background:#black;
+        border:1px solid #ffe8f0;
+      ">
+        <strong>${word.english}</strong>
+        <br>
+        <span>${word.hindi}</span>
+      </div>
+    `;
+        });
+
+        html += `</div>`;
+
+        englishAnswer.innerHTML = html;
+
+        englishAnswer.style.display = "block";
+      }
+
+      /*
+      ==================================================
+      NEXT
+      ==================================================
+      */
+
+      function nextSentence() {
+        currentSentence++;
+
+        if (currentSentence >= sentences.length) {
+          currentSentence = 0;
+        }
+
+        if (paragraphMode) {
+          showParagraph();
+        } else {
+          showSentence();
+        }
+      }
+
+      /*
+      ==================================================
+      PREVIOUS
+      ==================================================
+      */
+
+      function previousSentence() {
+        currentSentence--;
+
+        if (currentSentence < 0) {
+          currentSentence = sentences.length - 1;
+        }
+
+        if (paragraphMode) {
+          showParagraph();
+        } else {
+          showSentence();
+        }
+      }
+
+      /*
+      ==================================================
+      SHOW ANSWER
+      ==================================================
+      */
+
+      function showAnswer() {
+        if (paragraphMode) {
+          showParagraphAnswer();
+          return;
+        }
+
+        englishAnswer.style.display = "block";
+      }
+
+      /*
+      ==================================================
+      TEXT TO SPEECH
+      ==================================================
+      */
+
+      function speakAnswer() {
+        let text;
+
+        if (paragraphMode) {
+          text = paragraphs[currentSentence % paragraphs.length].english;
+        } else {
+          text = sentences[currentSentence].english;
+        }
+
+        if (!("speechSynthesis" in window)) {
+          alert("आपके browser में speech सुविधा उपलब्ध नहीं है।");
+
+          return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        const speech = new SpeechSynthesisUtterance(text);
+
+        speech.lang = "en-US";
+
+        speech.rate = 0.85;
+
+        speech.pitch = 1;
+
+        window.speechSynthesis.speak(speech);
+      }
+
+      /*
+      ==================================================
+      CLEAR SELECTED
+      ==================================================
+      */
+
+      function clearSelected() {
+        selectedWords = [];
+
+        document.querySelectorAll(".word-card.selected").forEach((card) => {
+          card.classList.remove("selected");
+        });
+      }
+
+      /*
+      ==================================================
+      KEYBOARD SHORTCUTS
+      ==================================================
+      */
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight") {
+          nextSentence();
+        }
+
+        if (event.key === "ArrowLeft") {
+          previousSentence();
+        }
+
+        if (event.key === " ") {
+          /*
+              Space दबाने पर answer show
+              */
+
+          if (document.activeElement.tagName !== "INPUT") {
+            event.preventDefault();
+
+            showAnswer();
+          }
+        }
+      });
+
+      /*
+      ==================================================
+      INITIAL LOAD
+      ==================================================
+      */
+
+      renderWords();
+
+      showSentence();
+    </script>
+  </body>
+</html>

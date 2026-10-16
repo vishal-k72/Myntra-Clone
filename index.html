@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgz1WE9cd0Mxm_jeAX0XfwCwNDt5k5Ro-76UTcbRetlQ&s=10">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Myntra Clone</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="page2.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=search" />
+</head>
+<body> 
+    <header>
+        <div class="logo_container"><a href="#"><img class="myntra_home" src="https://i.pinimg.com/736x/75/68/05/75680550fdc2305216ad9014d2b8b8f2.jpg" alt="Myntra Logo"></a>
+        </div>
+        <nav class="nav_bar">
+            <a href="">Men</a>
+            <a href="">Women</a>
+            <a href="">Kids</a>
+            <a href="">Home & Living</a>
+            <a href="">Beauty</a>
+            <a href="">Studio<sup style="color: #ff3f6c; display: inline;">new</sup></a>
+        </nav>
+        <div class="search_bar">
+            <span class="material-symbols-outlined search_icon">search</span>
+            <input class="search_input" placeholder="Search for Products, Brands and more">
+        </div>
+
+        <div class="action_bar">
+            <a href="">
+                <div class="action_conainer">
+                    <i class="fa-regular fa-user action_icon"></i>
+                    <span class="action_name">Profile</span>
+                </div>
+            </a>
+
+            <a href="">
+                <div class="action_conainer">
+                    <i class="fa-regular fa-heart action_icon"></i>
+                    <span class="action_name">Wishlist</span>
+                </div>
+            </a>
+
+            <div onclick="printCartItems(); calculatePrice(); countPrice();" id="cartBtn" class="action_conainer">
+                <i class="fa-solid fa-cart-arrow-down action_icon"></i>
+                <span class="action_name">Cart</span>
+                <span class="bag-item-count"></span>
+            </div>
+            <a href="cart.html">
+            </a>
+        </div>
+    </header>
+
+
+    <div class="wrapper">
+        
+        <main id="main-one" class="container">
+           <div class="discount_container">
+                <div class="discount_note">
+                    <div class="noteOne">flat &#8377;300/- off </div>
+                    <div class="noteTwo">on first purchase</div>
+                </div>
+            </div>
+
+            <div class="banner_container"><img class="banner_image" src="https://assets.myntassets.com/w_980,c_limit,fl_progressive,dpr_2.0/assets/images/2022/7/25/9be788ff-39a4-4214-99d0-fc97505aae5a1658752545685-USPA_Desk_Banner.jpg" alt="">
+            <img id="second_banner" src="https://assets.myntassets.com/w_980,c_limit,fl_progressive,dpr_2.0/assets/images/2026/JUNE/20/G3nDKp8I_ceb585ae8826431d9a98ed1d7bda9eec.gif" alt=""></div>
+
+            <div class="category_heading">medal worthy brands to bag</div>
+
+
+                <!-- Functional Elements Here -->
+            <div class="items-container">
+
+            </div>
+            <button onclick="printCartItems()" id="next-btn" class="btn">Go to Main Two</button>
+        </main>
+
+        <main id="main-two" class="container hidden">
+            
+            <div class="cart-container">
+            <div class="cart-items">
+                
+            </div>
+
+
+            <div class="cart-total-price">
+                <div>
+                    No Item Selected
+                </div>
+            </div>
+ 
+        </div>
+            <button id="back-btn" class="btn btn-secondary">Go Back</button>
+        </main>
+
+    </div>
+
+    <footer class="footer">
+
+    <div class="footer_container">
+
+        <!-- Online Shopping -->
+        <div class="footer_column">
+            <h3>ONLINE SHOPPING</h3>
+
+            <a href="#">Men</a>
+            <a href="#">Women</a>
+            <a href="#">Kids</a>
+            <a href="#">Home & Living</a>
+            <a href="#">Beauty</a>
+            <a href="#">Gift Cards</a>
+            <a href="#">Myntra Insider</a>
+        </div>
+
+
+        <!-- Customer Policies -->
+        <div class="footer_column">
+            <h3>CUSTOMER POLICIES</h3>
+
+            <a href="#">Contact Us</a>
+            <a href="#">FAQ</a>
+            <a href="#">T&C</a>
+            <a href="#">Terms Of Use</a>
+            <a href="#">Track Orders</a>
+            <a href="#">Shipping</a>
+            <a href="#">Cancellation</a>
+            <a href="#">Returns</a>
+            <a href="#">Privacy Policy</a>
+        </div>
+
+
+        <!-- Useful Links -->
+        <div class="footer_column">
+            <h3>USEFUL LINKS</h3>
+
+            <a href="#">Blog</a>
+            <a href="#">Careers</a>
+            <a href="#">Site Map</a>
+            <a href="#">Corporate Information</a>
+            <a href="#">Whitehat</a>
+            <a href="#">Cleartrip</a>
+        </div>
+
+
+        <!-- App & Social -->
+        <div class="footer_column footer_app">
+
+            <h3>EXPERIENCE MYNTRA APP ON MOBILE</h3>
+
+            <div class="app_links">
+                <a href="#" class="app_btn">
+                    Google Play
+                </a>
+
+                <a href="#" class="app_btn">
+                    App Store
+                </a>
+            </div>
+
+
+            <h3 class="social_title">KEEP IN TOUCH</h3>
+
+            <div class="social_links">
+                <a href="#">Facebook</a>
+                <a href="#">Instagram</a>
+                <a href="#">Twitter</a>
+                <a href="#">YouTube</a>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Popular Searches -->
+    <div class="popular_searches">
+
+        <h3>POPULAR SEARCHES</h3>
+
+        <p>
+            Makeup | Dresses For Girls | T-Shirts | Sandals | Headphones |
+            Babydolls | Blazers For Men | Handbags | Ladies Watches |
+            Bags | Sport Shoes | Reebok Shoes | Puma Shoes | Jeans |
+            Shoes | Shirts | Adidas Shoes | Nike Shoes | Saree |
+            Watches | Tops | Kurtis | Sunglasses | Jackets |
+            Shoes For Men | Clothes | Fashion
+        </p>
+
+    </div>
+
+
+    <!-- Footer Bottom -->
+    <div class="footer_bottom">
+
+        <p>
+            © 2026 www.myntraclone.com. All rights reserved.
+        </p>
+
+        <div class="footer_bottom_links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms & Conditions</a>
+            <a href="/Learn Eng/Normal Testt.html">Help</a>
+        </div>
+
+    </div>
+
+</footer>
+
+   <script src="script.js"></script>
+    <script src="https://kit.fontawesome.com/0f21ab6b88.js" crossorigin="anonymous"></script>
+</body>
+</html>
