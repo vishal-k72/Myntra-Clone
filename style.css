@@ -623,16 +623,18 @@ p {
   transform-style: preserve-3d;
   transition: transform 0.6s ease, filter 0.6s ease;
   animation: backk 1s ease-in-out;
+  border-radius: 8px 28px;
 }
 
 /* Hover effect */
 .item-image:hover {
-  animation: imageFlipFloat 1.2s ease-in-out forwards;
+  /* animation: imageFlipFloat 1.2s ease-in-out forwards; */
+  transform: translateY(-10px);
 }
 
 @keyframes backk {
     0% {
-        transform: rotateZ(360deg) scale(1.2) translateY(-10px);
+        transform: rotateZ(0deg) scale(1.2) translateY(-10px);
     filter: drop-shadow(0 12px 12px rgba(0, 0, 0, 0.544));
     }
     100% {
